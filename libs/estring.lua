@@ -10,4 +10,18 @@ function estring.split (str, delim)
     return table.unpack(t)
 end
 
+function estring.tableFromString (str)
+    local t = {}
+    str:gsub(".", function (c) return table.insert(t, c) end)
+    return t
+end
+
+function estring.isLower (str)
+    return str:find("^%l+$") ~= nil
+end
+
+function estring.isUpper (str)
+    return str:find("^%u+$") ~= nil
+end
+
 return estring

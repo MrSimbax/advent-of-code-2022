@@ -1,6 +1,8 @@
 -- Functional programming
 local M = {}
 
+local eio = require "libs/eio"
+
 function M.id (x)
     return x
 end
@@ -11,7 +13,7 @@ local function copySeq (as)
     return rs
 end
 
-function M.reduce (op, init, as)
+function M.reduceSeq (op, init, as)
     local acc = init
     for _, a in ipairs(as) do
         acc = op(acc, a)
@@ -19,8 +21,17 @@ function M.reduce (op, init, as)
     return acc
 end
 
+-- op must be commutative as pairs(t) is unordered
+function M.reduce (op, init, t)
+    local acc = init
+    for _, v in pairs(t) do
+        acc = op(acc, v)
+    end
+    return acc
+end
+
 function M.sum (as)
-    return M.reduce(function (a, b) return a + b end, 0, as)
+    return M.reduceSeq(function (a, b) return a + b end, 0, as)
 end
 
 function M.maximum (as)
@@ -56,6 +67,16 @@ function M.take (n, as)
     return rs
 end
 
+function M.skip (n, as)
+    local rs = {}
+    table.move(as, n + 1, #as, 1, rs)
+    return rs
+end
+
+function M.head (as)
+    return as[1]
+end
+
 function M.inversed (t)
     local r = {}
     for k, v in pairs(t) do
@@ -68,6 +89,19 @@ function M.compose (g, ...)
     if g == nil then return M.id end
     local f = M.compose(...)
     return function (...) return g(f(...)) end
+end
+
+function M.groupsOf (n, as)
+    local rs = {}
+    local m = #as // n
+    if #as % n ~= 0 then
+        m = m + 1
+    end
+    for _ = 1, m do
+        table.insert(rs, M.take(n, as))
+        as = M.skip(n, as)
+    end
+    return rs
 end
 
 return M
