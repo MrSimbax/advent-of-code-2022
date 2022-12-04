@@ -1,8 +1,6 @@
 -- Functional programming
 local M = {}
 
-local eio = require "libs/eio"
-
 function M.id (x)
     return x
 end
@@ -100,6 +98,31 @@ function M.groupsOf (n, as)
     for _ = 1, m do
         table.insert(rs, M.take(n, as))
         as = M.skip(n, as)
+    end
+    return rs
+end
+
+function M.collect (from, to, step)
+    if not step then
+        if from <= to then
+            step = 1
+        else
+            step = -1
+        end
+    end
+    local rs = {}
+    for i = from, to, step do
+        table.insert(rs, i)
+    end
+    return rs
+end
+
+function M.filter (pred, as)
+    local rs = {}
+    for _, a in ipairs(as) do
+        if pred(a) then
+            table.insert(rs, a)
+        end
     end
     return rs
 end

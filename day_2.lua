@@ -39,7 +39,7 @@ local shapeFromPlayerChar = {
 }
 
 local function roundFromLine (line)
-    local opponentChar, playerChar = split(line)
+    local opponentChar, playerChar = table.unpack(split(line))
     return {shapeFromOpponentChar[opponentChar], shapeFromPlayerChar[playerChar]}
 end
 
@@ -94,7 +94,7 @@ local desiredOutcomeFromChar = {
 }
 
 local function roundStrategyFromLine (line)
-    local opponentChar, desiredOutcomeChar = split(line)
+    local opponentChar, desiredOutcomeChar = table.unpack(split(line))
     return {shapeFromOpponentChar[opponentChar], desiredOutcomeFromChar[desiredOutcomeChar]}
 end
 

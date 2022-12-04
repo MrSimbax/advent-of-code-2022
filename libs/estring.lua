@@ -7,7 +7,7 @@ function estring.split (str, delim)
     for word in str:gmatch(string.format("[^%s]*", delim)) do
         t[#t + 1] = word
     end
-    return table.unpack(t)
+    return t
 end
 
 function estring.tableFromString (str)
