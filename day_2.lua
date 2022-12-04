@@ -1,24 +1,7 @@
 local eio = require "libs/eio"
 local estring = require "libs/estring"
-local functional = require "libs/functional"
-
-local printf = eio.printf
-local compose = functional.compose
-local map = functional.map
-local sum = functional.sum
-local inversed = functional.inversed
-local split = estring.split
-
-local input = {}
-
-local function loadInput ()
-    if #input == 0 then
-        for line in io.lines() do
-            table.insert(input, line)
-        end
-    end
-    return input
-end
+local F = require "libs/functional"
+local input = require "libs/input"
 
 local Shape = {
     Rock = 1,
@@ -39,7 +22,7 @@ local shapeFromPlayerChar = {
 }
 
 local function roundFromLine (line)
-    local opponentChar, playerChar = table.unpack(split(line))
+    local opponentChar, playerChar = table.unpack(estring.split(line))
     return {shapeFromOpponentChar[opponentChar], shapeFromPlayerChar[playerChar]}
 end
 
@@ -85,7 +68,11 @@ local function scoreFromRound (round)
     return score(table.unpack(round))
 end
 
-printf("Part 1: %i\n", sum(map(compose(scoreFromRound, roundFromLine), loadInput())))
+local function sumScores (rounds)
+    return F.sum(F.map(scoreFromRound, rounds))
+end
+
+eio.printf("Part 1: %i\n", sumScores(F.map(roundFromLine, input.lines())))
 
 local desiredOutcomeFromChar = {
     ["X"] = Outcome.Loss,
@@ -94,11 +81,11 @@ local desiredOutcomeFromChar = {
 }
 
 local function roundStrategyFromLine (line)
-    local opponentChar, desiredOutcomeChar = table.unpack(split(line))
+    local opponentChar, desiredOutcomeChar = table.unpack(estring.split(line))
     return {shapeFromOpponentChar[opponentChar], desiredOutcomeFromChar[desiredOutcomeChar]}
 end
 
-local winningShapeAgainst = inversed(losingShapeAgainst)
+local winningShapeAgainst = F.inversed(losingShapeAgainst)
 
 local function shapeForOutcome (opponentShape, desiredOutcome)
     if desiredOutcome == Outcome.Draw then
@@ -115,4 +102,4 @@ local function roundFromRoundStrategy (roundStrategy)
     return {opponentShape, shapeForOutcome(opponentShape, desiredOutcome)}
 end
 
-printf("Part 2: %i\n", sum(map(compose(scoreFromRound, roundFromRoundStrategy, roundStrategyFromLine), loadInput())))
+eio.printf("Part 2: %i\n", sumScores(F.map(F.compose(roundFromRoundStrategy, roundStrategyFromLine), input.lines())))

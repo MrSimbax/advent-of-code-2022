@@ -1,7 +1,7 @@
 -- Functional programming
-local M = {}
+local F = {}
 
-function M.id (x)
+function F.id (x)
     return x
 end
 
@@ -11,7 +11,7 @@ local function copySeq (as)
     return rs
 end
 
-function M.reduceSeq (op, init, as)
+function F.reduceSeq (op, init, as)
     local acc = init
     for _, a in ipairs(as) do
         acc = op(acc, a)
@@ -20,7 +20,7 @@ function M.reduceSeq (op, init, as)
 end
 
 -- op must be commutative as pairs(t) is unordered
-function M.reduce (op, init, t)
+function F.reduce (op, init, t)
     local acc = init
     for _, v in pairs(t) do
         acc = op(acc, v)
@@ -28,15 +28,15 @@ function M.reduce (op, init, t)
     return acc
 end
 
-function M.sum (as)
-    return M.reduceSeq(function (a, b) return a + b end, 0, as)
+function F.sum (as)
+    return F.reduceSeq(function (a, b) return a + b end, 0, as)
 end
 
-function M.maximum (as)
+function F.maximum (as)
     return math.max(table.unpack(as))
 end
 
-function M.map (f, as)
+function F.map (f, as)
     local rs = {}
     for i, a in ipairs(as) do
         rs[i] = f(a)
@@ -44,13 +44,13 @@ function M.map (f, as)
     return rs
 end
 
-function M.sorted (as, cmp)
+function F.sorted (as, cmp)
     local rs = copySeq(as)
     table.sort(rs, cmp)
     return rs
 end
 
-function M.reversed (as)
+function F.reversed (as)
     local rs = copySeq(as)
     for i = 1, #rs // 2 do
         local j = #rs - i + 1
@@ -59,23 +59,23 @@ function M.reversed (as)
     return rs
 end
 
-function M.take (n, as)
+function F.take (n, as)
     local rs = {}
     table.move(as, 1, math.min(n, #as), 1, rs)
     return rs
 end
 
-function M.skip (n, as)
+function F.skip (n, as)
     local rs = {}
     table.move(as, n + 1, #as, 1, rs)
     return rs
 end
 
-function M.head (as)
+function F.head (as)
     return as[1]
 end
 
-function M.inversed (t)
+function F.inversed (t)
     local r = {}
     for k, v in pairs(t) do
         r[v] = k
@@ -83,26 +83,26 @@ function M.inversed (t)
     return r
 end
 
-function M.compose (g, ...)
-    if g == nil then return M.id end
-    local f = M.compose(...)
+function F.compose (g, ...)
+    if g == nil then return F.id end
+    local f = F.compose(...)
     return function (...) return g(f(...)) end
 end
 
-function M.groupsOf (n, as)
+function F.groupsOf (n, as)
     local rs = {}
     local m = #as // n
     if #as % n ~= 0 then
         m = m + 1
     end
     for _ = 1, m do
-        table.insert(rs, M.take(n, as))
-        as = M.skip(n, as)
+        table.insert(rs, F.take(n, as))
+        as = F.skip(n, as)
     end
     return rs
 end
 
-function M.collect (from, to, step)
+function F.collect (from, to, step)
     if not step then
         if from <= to then
             step = 1
@@ -117,7 +117,7 @@ function M.collect (from, to, step)
     return rs
 end
 
-function M.filter (pred, as)
+function F.filter (pred, as)
     local rs = {}
     for _, a in ipairs(as) do
         if pred(a) then
@@ -127,4 +127,30 @@ function M.filter (pred, as)
     return rs
 end
 
-return M
+function F.takeWhile (pred, as)
+    local rs = {}
+    for _, a in ipairs(as) do
+        if pred(a) then
+            table.insert(rs, a)
+        else
+            break
+        end
+    end
+    return rs
+end
+
+function F.split (delim, as)
+    local function pred (a)
+        return a ~= delim
+    end
+
+    local rs = {}
+    while #as > 0 do
+        local ays = F.takeWhile(pred, as)
+        table.insert(rs, ays)
+        as = F.skip(#ays + 1, as)
+    end
+    return rs
+end
+
+return F

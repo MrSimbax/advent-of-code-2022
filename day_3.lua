@@ -1,56 +1,37 @@
 local eio = require "libs/eio"
 local estring = require "libs/estring"
-local functional = require "libs/functional"
+local F = require "libs/functional"
 local Set = require "libs/Set"
-
-local printf = eio.printf
-local compose = functional.compose
-local map = functional.map
-local head = functional.head
-local reduce = functional.reduce
-local sum = functional.sum
-local take = functional.take
-local reversed = functional.reversed
-local tableFromString = estring.tableFromString
-local isUpper = estring.isUpper
-local isLower = estring.isLower
-local groupsOf = functional.groupsOf
-
-local input = {}
-
-local function loadInput ()
-    if #input == 0 then
-        for line in io.lines() do
-            table.insert(input, line)
-        end
-    end
-    return input
-end
+local input = require "libs/input"
 
 local function familyFromLine (line)
-    local chars = tableFromString(line)
-    local firstCompartment = take(#line // 2, chars)
-    local secondCompartment = take(#line // 2, reversed(chars))
-    return map(Set.new, {firstCompartment, secondCompartment})
+    local chars = estring.tableFromString(line)
+    local firstCompartment = F.take(#line // 2, chars)
+    local secondCompartment = F.take(#line // 2, F.reversed(chars))
+    return F.map(Set.new, {firstCompartment, secondCompartment})
 end
 
 local function commonItemInFamily (family)
-    local allItems = reduce(Set.union, Set.new{}, family)
-    return head(Set.toSeq(reduce(Set.intersection, allItems, family)))
+    local allItems = F.reduce(Set.union, Set.new{}, family)
+    return F.head(Set.toSeq(F.reduce(Set.intersection, allItems, family)))
 end
 
 local function itemPriority (c)
-    if isLower(c) then
+    if estring.isLower(c) then
         return c:byte() - string.byte('a') + 1
-    elseif isUpper(c) then
+    elseif estring.isUpper(c) then
         return c:byte() - string.byte('A') + 27
     end
 end
 
-printf("Part 1: %i\n", sum(map(compose(itemPriority, commonItemInFamily, familyFromLine), loadInput())))
-
-local function familyFromLines (lines)
-    return map(compose(Set.new, tableFromString), lines)
+local function sumPrioritiesOfCommonItemsInFamily (family)
+    return F.sum(F.map(F.compose(itemPriority, commonItemInFamily), family))
 end
 
-printf("Part 2: %i\n", sum(map(compose(itemPriority, commonItemInFamily, familyFromLines), groupsOf(3, loadInput()))))
+eio.printf("Part 1: %i\n", sumPrioritiesOfCommonItemsInFamily(F.map(familyFromLine, input.lines())))
+
+local function familyFromLines (lines)
+    return F.map(F.compose(Set.new, estring.tableFromString), lines)
+end
+
+eio.printf("Part 2: %i\n", sumPrioritiesOfCommonItemsInFamily(F.map(familyFromLines, F.groupsOf(3, input.lines()))))
