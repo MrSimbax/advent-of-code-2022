@@ -75,6 +75,10 @@ function F.head (as)
     return as[1]
 end
 
+function F.last (as)
+    return as[#as]
+end
+
 function F.inversed (t)
     local r = {}
     for k, v in pairs(t) do
@@ -139,6 +143,17 @@ function F.takeWhile (pred, as)
     return rs
 end
 
+function F.skipWhile (pred, as)
+    local rs = {}
+    for i, a in ipairs(as) do
+        if not pred(a) then
+            table.move(as, i, #as, 1, rs)
+            return rs
+        end
+    end
+    return rs
+end
+
 function F.split (delim, as)
     local function pred (a)
         return a ~= delim
@@ -151,6 +166,14 @@ function F.split (delim, as)
         as = F.skip(#ays + 1, as)
     end
     return rs
+end
+
+function F.sequence (a, n)
+    local as = {}
+    for i = 1, n do
+        table.insert(as, a(i))
+    end
+    return as
 end
 
 return F
