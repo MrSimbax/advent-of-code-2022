@@ -1,4 +1,4 @@
-Set = require "libs/Set"
+local Set = require "libs/Set"
 
 describe("Set", function ()
     describe(".new", function ()
@@ -18,7 +18,6 @@ describe("Set", function ()
             assert.is.falsy(set["a"])
             assert.is.falsy(set[{}])
             assert.is.falsy(set[true])
-            assert.is.falsy(set[nil])
         end)
 
         it("only elements which are in the set", function ()
@@ -29,130 +28,6 @@ describe("Set", function ()
             assert.is.falsy(set["a"])
             assert.is.falsy(set[{}])
             assert.is.falsy(set[true])
-            assert.is.falsy(set[nil])
-        end)
-    end)
-
-    describe(".union", function ()
-        it("is + operator", function ()
-            assert.are.same(Set.union, getmetatable(Set.new{}).__add)
-        end)
-
-        it("with empty set is identity", function ()
-            assert.are.same(Set.new{}, Set.new{} + Set.new{})
-            assert.are.same(Set.new{1}, Set.new{} + Set.new{1})
-            assert.are.same(Set.new{1}, Set.new{1} + Set.new{})
-        end)
-
-        it("is union of sets", function ()
-            assert.are.same(Set.new{1, 2, 3}, Set.new{1, 2} + Set.new{2, 3})
-        end)
-
-        it("does not modify given sets", function ()
-            local a = Set.new{1}
-            local b = Set.new{2}
-            assert.is.truthy(a + b)
-            assert.are.same(Set.new{1}, a)
-            assert.are.same(Set.new{2}, b)
-        end)
-
-        it("returns a new set", function ()
-            local a = Set.new{1}
-            local b = Set.new{2}
-            local sum = a + b
-            sum[3] = true
-            assert.are.same(Set.new{1}, a)
-            assert.are.same(Set.new{2}, b)
-        end)
-
-        it("throws error for non-sets", function ()
-            assert.has_error(function () return Set.new{} + {} end)
-            assert.has_error(function () return {} + Set.new{} end)
-            assert.has_error(function () return 1 + Set.new{} end)
-            assert.has_error(function () return Set.new{} + 1 end)
-        end)
-    end)
-
-    describe(".intersection", function ()
-        it("is * operator", function ()
-            assert.are.same(Set.intersection, getmetatable(Set.new{}).__mul)
-        end)
-
-        it("with empty set is empty set", function ()
-            assert.are.same(Set.new{}, Set.new{} * Set.new{})
-            assert.are.same(Set.new{}, Set.new{} * Set.new{1})
-            assert.are.same(Set.new{}, Set.new{1} * Set.new{})
-        end)
-
-        it("is intersection of sets", function ()
-            assert.are.same(Set.new{2}, Set.new{1, 2} * Set.new{2, 3})
-        end)
-
-        it("does not modify given sets", function ()
-            local a = Set.new{1}
-            local b = Set.new{2}
-            assert.is.truthy(a * b)
-            assert.are.same(Set.new{1}, a)
-            assert.are.same(Set.new{2}, b)
-        end)
-
-        it("returns a new set", function ()
-            local a = Set.new{1}
-            local b = Set.new{2}
-            local prod = a * b
-            prod[3] = true
-            assert.are.same(Set.new{1}, a)
-            assert.are.same(Set.new{2}, b)
-        end)
-
-        it("throws error for non-sets", function ()
-            assert.has_error(function () return Set.new{} * {} end)
-            assert.has_error(function () return {} * Set.new{} end)
-            assert.has_error(function () return 1 * Set.new{} end)
-            assert.has_error(function () return Set.new{} * 1 end)
-        end)
-    end)
-
-    describe(".difference", function ()
-        it("is - operator", function ()
-            assert.are.same(Set.difference, getmetatable(Set.new{}).__sub)
-        end)
-
-        it("with empty set is identity", function ()
-            assert.are.same(Set.new{}, Set.new{} - Set.new{})
-            assert.are.same(Set.new{1}, Set.new{1} - Set.new{})
-        end)
-
-        it("of empty set is empty", function ()
-            assert.are.same(Set.new{}, Set.new{} - Set.new{1})
-        end)
-
-        it("is difference of sets", function ()
-            assert.are.same(Set.new{1}, Set.new{1, 2} - Set.new{2, 3})
-        end)
-
-        it("does not modify given sets", function ()
-            local a = Set.new{1}
-            local b = Set.new{2}
-            assert.is.truthy(a - b)
-            assert.are.same(Set.new{1}, a)
-            assert.are.same(Set.new{2}, b)
-        end)
-
-        it("returns a new set", function ()
-            local a = Set.new{1}
-            local b = Set.new{2}
-            local diff = a - b
-            diff[3] = true
-            assert.are.same(Set.new{1}, a)
-            assert.are.same(Set.new{2}, b)
-        end)
-
-        it("throws error for non-sets", function ()
-            assert.has_error(function () return Set.new{} - {} end)
-            assert.has_error(function () return {} - Set.new{} end)
-            assert.has_error(function () return 1 - Set.new{} end)
-            assert.has_error(function () return Set.new{} - 1 end)
         end)
     end)
 
@@ -193,6 +68,102 @@ describe("Set", function ()
             local set = Set.new{1}
             Set.del(set, 2)
             assert.are.same(Set.new{1}, set)
+        end)
+    end)
+
+    describe(".union", function ()
+        it("is + operator", function ()
+            assert.are.same(Set.union, getmetatable(Set.new{}).__add)
+        end)
+
+        it("with empty set is identity", function ()
+            assert.are.same(Set.new{}, Set.new{} + Set.new{})
+            assert.are.same(Set.new{1}, Set.new{} + Set.new{1})
+            assert.are.same(Set.new{1}, Set.new{1} + Set.new{})
+        end)
+
+        it("is union of sets", function ()
+            assert.are.same(Set.new{1, 2, 3}, Set.new{1, 2} + Set.new{2, 3})
+        end)
+
+        it("does not modify given sets", function ()
+            local a = Set.new{1}
+            local b = Set.new{2}
+            assert.is.truthy(a + b)
+            assert.are.same(Set.new{1}, a)
+            assert.are.same(Set.new{2}, b)
+        end)
+
+        it("throws error for non-sets", function ()
+            assert.has_error(function () return Set.new{} + {} end)
+            assert.has_error(function () return {} + Set.new{} end)
+            assert.has_error(function () return 1 + Set.new{} end)
+            assert.has_error(function () return Set.new{} + 1 end)
+        end)
+    end)
+
+    describe(".intersection", function ()
+        it("is * operator", function ()
+            assert.are.same(Set.intersection, getmetatable(Set.new{}).__mul)
+        end)
+
+        it("with empty set is empty set", function ()
+            assert.are.same(Set.new{}, Set.new{} * Set.new{})
+            assert.are.same(Set.new{}, Set.new{} * Set.new{1})
+            assert.are.same(Set.new{}, Set.new{1} * Set.new{})
+        end)
+
+        it("is intersection of sets", function ()
+            assert.are.same(Set.new{2}, Set.new{1, 2} * Set.new{2, 3})
+        end)
+
+        it("does not modify given sets", function ()
+            local a = Set.new{1}
+            local b = Set.new{2}
+            assert.is.truthy(a * b)
+            assert.are.same(Set.new{1}, a)
+            assert.are.same(Set.new{2}, b)
+        end)
+
+        it("throws error for non-sets", function ()
+            assert.has_error(function () return Set.new{} * {} end)
+            assert.has_error(function () return {} * Set.new{} end)
+            assert.has_error(function () return 1 * Set.new{} end)
+            assert.has_error(function () return Set.new{} * 1 end)
+        end)
+    end)
+
+    describe(".difference", function ()
+        it("is - operator", function ()
+            assert.are.same(Set.difference, getmetatable(Set.new{}).__sub)
+        end)
+
+        it("with empty set is identity", function ()
+            assert.are.same(Set.new{}, Set.new{} - Set.new{})
+            assert.are.same(Set.new{1}, Set.new{1} - Set.new{})
+        end)
+
+        it("of empty set is empty", function ()
+            assert.are.same(Set.new{}, Set.new{} - Set.new{1})
+        end)
+
+        it("is difference of sets", function ()
+            assert.are.same(Set.new{1}, Set.new{1, 2} - Set.new{2, 3})
+        end)
+
+        it("does not modify given sets", function ()
+            local a = Set.new{1}
+            local b = Set.new{2}
+            assert.is.truthy(a - b)
+            assert.are.same(Set.new{1}, a)
+            assert.are.same(Set.new{2}, b)
+        end)
+
+        it("throws error for non-sets", function ()
+            assert.has_error(function () return Set.new{} - {} end)
+            assert.has_error(function () return {} - Set.new{} end)
+            assert.has_error(function () return 1 - Set.new{} end)
+            assert.has_error(function () return Set.new{} - 1 end)
         end)
     end)
 

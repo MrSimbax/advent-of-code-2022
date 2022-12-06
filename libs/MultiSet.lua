@@ -9,6 +9,7 @@ local sizes = {}
 setmetatable(sizes, {__mode = "k"})
 
 function MultiSet.add (a, k, m)
+    m = m or 1
     if a[k] then
         a[k] = a[k] + m
     else
@@ -18,6 +19,7 @@ function MultiSet.add (a, k, m)
 end
 
 function MultiSet.del (a, k, m)
+    m = m or 1
     if a[k] then
         local n = a[k] - m
         if n <= 0 then
@@ -90,7 +92,7 @@ end
 
 mt.__mul = MultiSet.intersection
 
-mt.__sub = function (a, b)
+function MultiSet.difference (a, b)
     if getmetatable(a) ~= mt or getmetatable(b) ~= mt then
         error("attempt to 'subtract' a set with a non-set value, or the other way around", 2)
     end
@@ -104,11 +106,15 @@ mt.__sub = function (a, b)
     return res
 end
 
-mt.__len = function (a)
+mt.__sub = MultiSet.difference
+
+function MultiSet.size (a)
     return sizes[a]
 end
 
-mt.__le = function (a, b)
+mt.__len = MultiSet.size
+
+function MultiSet.isSubset (a, b)
     for k, m in pairs(a) do
         if not b[k] or m > b[k] then
             return false
@@ -117,13 +123,19 @@ mt.__le = function (a, b)
     return true
 end
 
-mt.__lt = function (a, b)
+mt.__le = MultiSet.isSubset
+
+function MultiSet.isStrictSubset (a, b)
     return a <= b and not (b <= a)
 end
 
-mt.__eq = function (a, b)
+mt.__lt = MultiSet.isStrictSubset
+
+function MultiSet.areEqual (a, b)
     return a <= b and b <= a
 end
+
+mt.__eq = MultiSet.areEqual
 
 function MultiSet.toSeq (set)
     local seq = {}
