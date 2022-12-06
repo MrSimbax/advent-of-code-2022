@@ -137,7 +137,7 @@ end
 
 function MultiSet.toSetSeq (set)
     local seq = {}
-    for k, m in pairs(set) do
+    for k, _ in pairs(set) do
         table.insert(seq, k)
     end
     return seq

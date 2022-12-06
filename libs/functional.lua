@@ -176,4 +176,10 @@ function F.sequence (a, n)
     return as
 end
 
+function F.slice (i, j, as)
+    local rs = {}
+    table.move(as, i, math.min(j, #as), 1, rs)
+    return rs
+end
+
 return F

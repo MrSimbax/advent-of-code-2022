@@ -62,7 +62,7 @@ end
 
 mt.__mul = Set.intersection
 
-mt.__sub = function (a, b)
+function Set.difference (a, b)
     if getmetatable(a) ~= mt or getmetatable(b) ~= mt then
         error("attempt to 'subtract' a set with a non-set value, or the other way around", 2)
     end
@@ -75,11 +75,15 @@ mt.__sub = function (a, b)
     return res
 end
 
-mt.__len = function (a)
+mt.__sub = Set.difference
+
+function Set.size (a)
     return sizes[a]
 end
 
-mt.__le = function (a, b)
+mt.__len = Set.size
+
+function Set.isSubset (a, b)
     for k in pairs(a) do
         if not b[k] then
             return false
@@ -88,22 +92,19 @@ mt.__le = function (a, b)
     return true
 end
 
-mt.__lt = function (a, b)
+mt.__le = Set.isSubset
+
+function Set.isStrictSubset (a, b)
     return a <= b and not (b <= a)
 end
 
-mt.__eq = function (a, b)
+mt.__lt = Set.isStrictSubset
+
+function Set.areEqual (a, b)
     return a <= b and b <= a
 end
 
-local function iter (set, key)
-    local nextKey = next(set, key)
-    return nextKey, nextKey
-end
-
-mt.__pairs = function (set)
-    return iter, set, nil
-end
+mt.__eq = Set.areEqual
 
 function Set.toSeq (set)
     local seq = {}
