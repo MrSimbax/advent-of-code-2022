@@ -1,11 +1,11 @@
 -- Functional programming
 local F = {}
 
-function F.id (x)
-    return x
+function F.id (...)
+    return ...
 end
 
-local function copySeq (as)
+function F.copySeq (as)
     local rs = {}
     table.move(as, 1, #as, 1, rs)
     return rs
@@ -19,7 +19,6 @@ function F.reduceSeq (op, init, as)
     return acc
 end
 
--- op must be commutative as pairs(t) is unordered
 function F.reduce (op, init, t)
     local acc = init
     for _, v in pairs(t) do
@@ -45,13 +44,13 @@ function F.map (f, as)
 end
 
 function F.sorted (as, cmp)
-    local rs = copySeq(as)
+    local rs = F.copySeq(as)
     table.sort(rs, cmp)
     return rs
 end
 
 function F.reversed (as)
-    local rs = copySeq(as)
+    local rs = F.copySeq(as)
     for i = 1, #rs // 2 do
         local j = #rs - i + 1
         rs[i], rs[j] = rs[j], rs[i]
@@ -163,6 +162,9 @@ function F.split (delim, as)
     while #as > 0 do
         local ays = F.takeWhile(pred, as)
         table.insert(rs, ays)
+        if as[#ays + 1] == delim and as[#ays + 2] == nil then
+            table.insert(rs, {})
+        end
         as = F.skip(#ays + 1, as)
     end
     return rs
@@ -174,6 +176,10 @@ function F.sequence (a, n)
         table.insert(as, a(i))
     end
     return as
+end
+
+function F.const (a)
+    return function (...) return a end
 end
 
 function F.slice (i, j, as)
