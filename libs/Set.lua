@@ -4,11 +4,29 @@ local Set = {}
 
 local mt = {}
 
+local sizes = {}
+setmetatable(sizes, {__mode = "k"})
+
+function Set.add (a, k)
+    if not a[k] then
+        a[k] = true
+        sizes[a] = sizes[a] + 1
+    end
+end
+
+function Set.del (a, k)
+    if a[k] then
+        a[k] = nil
+        sizes[a] = sizes[a] - 1
+    end
+end
+
 function Set.new (list)
     local set = {}
     setmetatable(set, mt)
+    sizes[set] = 0
     for _, v in ipairs(list) do
-        set[v] = true
+        Set.add(set, v)
     end
     return set
 end
@@ -19,10 +37,10 @@ function Set.union (a, b)
     end
     local res = Set.new{}
     for k in pairs(a) do
-        res[k] = true
+        Set.add(res, k)
     end
     for k in pairs(b) do
-        res[k] = true
+        Set.add(res, k)
     end
     return res
 end
@@ -35,7 +53,9 @@ function Set.intersection (a, b)
     end
     local res = Set.new{}
     for k in pairs(a) do
-        res[k] = b[k]
+        if b[k] then
+            Set.add(res, k)
+        end
     end
     return res
 end
@@ -49,18 +69,14 @@ mt.__sub = function (a, b)
     local res = Set.new{}
     for k in pairs(a) do
         if not b[k] then
-            res[k] = true
+            Set.add(res, k)
         end
     end
     return res
 end
 
 mt.__len = function (a)
-    local len = 0
-    for _ in pairs(a) do
-        len = len + 1
-    end
-    return len
+    return sizes[a]
 end
 
 mt.__le = function (a, b)
