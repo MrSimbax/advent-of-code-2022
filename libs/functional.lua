@@ -35,6 +35,15 @@ function F.maximum (as)
     return math.max(table.unpack(as))
 end
 
+function F.minimum (as)
+    if #as == 0 then return nil end
+    local m = as[1]
+    for i = 2, #as do
+        m = math.min(m, as[i])
+    end
+    return m
+end
+
 function F.map (f, as)
     local rs = {}
     for i, a in ipairs(as) do
@@ -185,6 +194,22 @@ end
 function F.slice (i, j, as)
     local rs = {}
     table.move(as, i, math.min(j, #as), 1, rs)
+    return rs
+end
+
+function F.keys (t)
+    local rs = {}
+    for k, v in pairs(t) do
+        table.insert(rs, k)
+    end
+    return rs
+end
+
+function F.values (t)
+    local rs = {}
+    for _, v in pairs(t) do
+        table.insert(rs, v)
+    end
     return rs
 end
 
