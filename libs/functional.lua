@@ -213,4 +213,14 @@ function F.values (t)
     return rs
 end
 
+function F.flatten (as)
+    local rs = {}
+    for _, ays in ipairs(as) do
+        for _, a in ipairs(ays) do
+            table.insert(rs, a)
+        end
+    end
+    return rs
+end
+
 return F
