@@ -223,4 +223,17 @@ function F.flatten (as)
     return rs
 end
 
+function F.zip (...)
+    local seqs = table.pack(...)
+    local rs = {}
+    for i = 1, #seqs[1] do
+        local tuple = {}
+        for j = 1, #seqs do
+            table.insert(tuple, seqs[j][i])
+        end
+        table.insert(rs, tuple)
+    end
+    return rs
+end
+
 return F

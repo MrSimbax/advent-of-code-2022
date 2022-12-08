@@ -278,4 +278,31 @@ describe("Vector", function ()
             assert.are.same(20, Vec.dot(Vec{1, 2, 3, 4}, Vec{4, 3, 2, 1}))
         end)
     end)
+
+    describe(".allowVectorIndices", function ()
+        it("allows indexing multidimensional arrays with vectors", function ()
+            local m = Vec.allowVectorIndices{
+                {1, 2},
+                {3, 4}
+            }
+            assert.are.same(1, m[Vec{1, 1}])
+            assert.are.same(2, m[Vec{1, 2}])
+            assert.are.same(3, m[Vec{2, 1}])
+            assert.are.same(4, m[Vec{2, 2}])
+            assert.are.same({3, 4}, m[Vec{2}])
+        end)
+
+        it("allows setting by indexing multidimensional arrays with vectors", function ()
+            local m = Vec.allowVectorIndices{
+                {1, 2},
+                {3, 4}
+            }
+            m[Vec{1, 2}] = 20
+            m[Vec{2}] = {30, 40}
+            assert.are.same(1, m[1][1])
+            assert.are.same(20, m[1][2])
+            assert.are.same(30, m[2][1])
+            assert.are.same(40, m[2][2])
+        end)
+    end)
 end)

@@ -3,12 +3,8 @@ local Vector = {}
 local mt = {}
 
 function Vector.new (a)
-    local v = {}
-    for i in ipairs(a) do
-        v[i] = a[i]
-    end
-    setmetatable(v, mt)
-    return v
+    setmetatable(a, mt)
+    return a
 end
 
 setmetatable(Vector, {__call = function (_, ...) return Vector.new(...) end})
@@ -16,16 +12,16 @@ setmetatable(Vector, {__call = function (_, ...) return Vector.new(...) end})
 function mt.__add (u, v)
     local r = Vector.new{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] + v[i]
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) + rawget(v, i))
         end
     elseif getmetatable(u) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] + v
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) + v)
         end
     else
-        for i in ipairs(v) do
-            r[i] = u + v[i]
+        for i = 1, #v do
+            rawset(r, i, u + rawget(v, i))
         end
     end
     return r
@@ -34,16 +30,16 @@ end
 function mt.__mul (u, v)
     local r = Vector.new{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] * v[i]
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) * rawget(v, i))
         end
     elseif getmetatable(u) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] * v
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) * v)
         end
     else
-        for i in ipairs(v) do
-            r[i] = u * v[i]
+        for i = 1, #v do
+            rawset(r, i, u * rawget(v, i))
         end
     end
     return r
@@ -52,12 +48,12 @@ end
 function mt.__sub (u, v)
     local r = Vector.new{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] - v[i]
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) - rawget(v, i))
         end
     elseif getmetatable(u) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] - v
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) - v)
         end
     else
         error("attempt to subtract vector from scalar", 2)
@@ -68,12 +64,12 @@ end
 function mt.__div (u, v)
     local r = Vector.new{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] / v[i]
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) / rawget(v, i))
         end
     elseif getmetatable(u) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] / v
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) / v)
         end
     else
         error("attempt to divide scalar by vector", 2)
@@ -84,12 +80,12 @@ end
 function mt.__idiv (u, v)
     local r = Vector.new{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] // v[i]
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) // rawget(v, i))
         end
     elseif getmetatable(u) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] // v
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) // v)
         end
     else
         error("attempt to divide scalar by vector", 2)
@@ -100,12 +96,12 @@ end
 function mt.__mod (u, v)
     local r = Vector.new{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] % v[i]
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) % rawget(v, i))
         end
     elseif getmetatable(u) == mt then
-        for i in ipairs(u) do
-            r[i] = u[i] % v
+        for i = 1, #u do
+            rawset(r, i, rawget(u, i) % v)
         end
     else
         error("attempt to take scalar modulo vector", 2)
@@ -115,8 +111,8 @@ end
 
 function mt.__unm (u)
     local r = Vector.new{}
-    for i in ipairs(u) do
-        r[i] = -u[i]
+    for i = 1, #u do
+        rawset(r, i, -rawget(u, i))
     end
     return r
 end
@@ -125,8 +121,8 @@ function mt.__eq (u, v)
     if getmetatable(u) ~= mt or getmetatable(v) ~= mt then
         error("attempt to compare a vector with something else", 2)
     end
-    for i in ipairs(u) do
-        if u[i] ~= v[i] then
+    for i = 1, #u do
+        if rawget(u, i) ~= rawget(v, i) then
             return false
         end
     end
@@ -137,8 +133,8 @@ function mt.__lt (u, v)
     if getmetatable(u) ~= mt or getmetatable(v) ~= mt then
         error("attempt to compare a vector with something else", 2)
     end
-    for i in ipairs(u) do
-        if u[i] < v[i] then
+    for i = 1, #u do
+        if rawget(u, i) < rawget(v, i) then
             return true
         end
     end
@@ -146,9 +142,6 @@ function mt.__lt (u, v)
 end
 
 function mt.__le (u, v)
-    if getmetatable(u) ~= mt or getmetatable(v) ~= mt then
-        error("attempt to compare a vector with something else", 2)
-    end
     return u == v or u < v
 end
 
@@ -202,10 +195,42 @@ end
 
 function Vector.dot (u, v)
     local r = 0
-    for i in ipairs(u) do
-        r = r + u[i] * v[i]
+    for i = 1, #u do
+        r = r + rawget(u, i) * rawget(v, i)
     end
     return r
+end
+
+local multidimMt = {}
+
+function Vector.allowVectorIndices (t)
+    setmetatable(t, multidimMt)
+    return t
+end
+
+function multidimMt.__index (t, key)
+    if getmetatable(key) == mt then
+        local r = t
+        for i = 1, #key do
+            r = r[rawget(key, i)]
+        end
+        return r
+    else
+        return rawget(t, key)
+    end
+end
+
+function multidimMt.__newindex (t, key, value)
+    if getmetatable(key) == mt then
+        local r = t
+        for i = 1, #key - 1 do
+            r = r[rawget(key, i)]
+        end
+        r[rawget(key, #key)] = value
+        return r
+    else
+        return rawget(t, key)
+    end
 end
 
 return Vector
