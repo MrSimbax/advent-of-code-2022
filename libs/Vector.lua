@@ -1,3 +1,5 @@
+local F = require "libs/functional"
+
 local Vector = {}
 
 local mt = {}
@@ -199,6 +201,18 @@ function Vector.dot (u, v)
         r = r + u[i] * v[i]
     end
     return r
+end
+
+function Vector.norm (u)
+    return math.sqrt(Vector.dot(u, u))
+end
+
+function Vector.dist (u, v)
+    return Vector.norm(u - v)
+end
+
+function mt.__tostring (v)
+    return "[" .. table.concat(F.map(tostring, v), ", ") .. "]"
 end
 
 local multidimMt = {}
