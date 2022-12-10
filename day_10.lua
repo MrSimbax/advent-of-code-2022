@@ -1,6 +1,10 @@
+local profile = require "libs.profile"
+
 local match = string.match
 local write = io.write
 local abs = math.abs
+
+profile.start()
 
 local X = 1
 local cycle = 0
@@ -48,3 +52,5 @@ end
 write("Part 2:")
 run()
 write("\nPart 1: ", totalStrength, "\n")
+
+profile.finish()

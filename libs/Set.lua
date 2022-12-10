@@ -1,4 +1,4 @@
-local seq = require "libs/sequence"
+local seq = require "libs.sequence"
 
 local map = seq.map
 local concat = table.concat

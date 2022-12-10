@@ -1,8 +1,9 @@
-local eio = require "libs/eio"
-local sequence = require "libs/sequence"
-local Set = require "libs/Set"
-local emath = require "libs/emath"
-local Vec2 = require "libs/Vec2"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
+local sequence = require "libs.sequence"
+local Set = require "libs.Set"
+local emath = require "libs.emath"
+local Vec2 = require "libs.Vec2"
 
 local input = eio.lines()
 local printf = eio.printf
@@ -14,6 +15,8 @@ local makeSequence = sequence.sequence
 local Vec = Vec2.makeVec
 local map = Vec2.map
 local dist = Vec2.dist
+
+profile.start()
 
 local dirFromChar = {
     ['U'] = Vec(0, 1),
@@ -60,3 +63,5 @@ end
 
 printf("Part 1: %i\n", moveRope(input, makeRope(2)))
 printf("Part 2: %i\n", moveRope(input, makeRope(10)))
+
+profile.finish()

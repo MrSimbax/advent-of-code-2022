@@ -1,5 +1,6 @@
-local eio = require "libs/eio"
-local sequence = require "libs/sequence"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
+local sequence = require "libs.sequence"
 
 local input = eio.lines()
 local printf = eio.printf
@@ -9,6 +10,8 @@ local equals = sequence.equals
 local match = string.match
 local concat = table.concat
 local move = table.move
+
+profile.start()
 
 local nils = {}
 local blank = find(equals(""), input)
@@ -66,3 +69,5 @@ end
 
 printf("Part 1: %s\n", moveCrates(crateMover9000))
 printf("Part 2: %s\n", moveCrates(crateMover9001))
+
+profile.finish()

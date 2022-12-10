@@ -1,11 +1,14 @@
-local eio = require "libs/eio"
-local estring = require "libs/estring"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
+local estring = require "libs.estring"
 
 local input = eio.lines()
 local printf = eio.printf
 local split = estring.split
-local maxinteger = math.maxinteger
+local huge = math.huge
 local pairs = pairs
+
+profile.start()
 
 local function makeDir (parent)
     return {parent = parent, dirs = {}, files = {}}
@@ -87,7 +90,7 @@ end
 local spaceToFree = calcSpaceToFree(root)
 
 local function sizeOfDirToDelete (sizes)
-    local minSize = maxinteger
+    local minSize = huge
     for i = 1, #sizes do
         local size = sizes[i]
         if size >= spaceToFree and size < minSize then
@@ -98,3 +101,5 @@ local function sizeOfDirToDelete (sizes)
 end
 
 printf("Part 2: %i\n", sizeOfDirToDelete(sizes))
+
+profile.finish()

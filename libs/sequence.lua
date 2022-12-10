@@ -1,8 +1,9 @@
 -- Helper local functions for sequences
-local F = {}
-
 local move = table.move
 local sort = table.sort
+local pairs = pairs
+local min = math.min
+local floor = math.floor
 
 local function id (...)
     return ...
@@ -67,7 +68,7 @@ local function sorted (as, cmp)
 end
 
 local function reverse (as)
-    for i = 1, #as // 2 do
+    for i = 1, floor(#as / 2) do
         local j = #as - i + 1
         as[i], as[j] = as[j], as[i]
     end
@@ -84,7 +85,7 @@ end
 
 local function take (n, as)
     local rs = {}
-    move(as, 1, math.min(n, #as), 1, rs)
+    move(as, 1, min(n, #as), 1, rs)
     return rs
 end
 
@@ -118,7 +119,7 @@ end
 
 local function groupsOf (n, as)
     local rs = {}
-    local m = #as // n
+    local m = floor(#as / n)
     if #as % n ~= 0 then
         m = m + 1
     end
@@ -178,7 +179,7 @@ local function skipWhile (pred, as)
     for i = 1, #as do
         local a = as[i]
         if not pred(a) then
-            table.move(as, i, #as, 1, rs)
+            move(as, i, #as, 1, rs)
             return rs
         end
     end
@@ -217,7 +218,7 @@ end
 
 local function slice (i, j, as)
     local rs = {}
-    table.move(as, i, j < #as and j or #as, 1, rs)
+    move(as, i, j < #as and j or #as, 1, rs)
     return rs
 end
 

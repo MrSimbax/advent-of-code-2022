@@ -1,8 +1,11 @@
-local eio = require "libs/eio"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
 
 local input = eio.lines()
 local printf = eio.printf
 local sort = table.sort
+
+profile.start()
 
 local calories = {}
 local sum = 0
@@ -19,3 +22,5 @@ sort(calories)
 
 printf("Part 1: %i\n", calories[#calories])
 printf("Part 2: %i\n", calories[#calories] + calories[#calories - 1] + calories[#calories - 2])
+
+profile.finish()

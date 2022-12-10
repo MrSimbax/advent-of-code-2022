@@ -1,5 +1,6 @@
-local eio = require "libs/eio"
-local Vec2 = require "libs/Vec2"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
+local Vec2 = require "libs.Vec2"
 
 local input = eio.lines()
 local printf = eio.printf
@@ -7,6 +8,8 @@ local sub = string.sub
 local Vec = Vec2.makeVec
 local Grid = Vec2.allowVec2Indices
 local makeGrid = Vec2.makeGrid
+
+profile.start()
 
 local function forest ()
     local r = {}
@@ -112,3 +115,5 @@ local function findMax (scores)
 end
 
 printf("Part 2: %i\n", findMax(findScenicScores(forest())))
+
+profile.finish()

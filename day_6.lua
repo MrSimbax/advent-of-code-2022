@@ -1,8 +1,11 @@
-local eio = require "libs/eio"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
 
 local input = eio.lines()
 local printf = eio.printf
 local sub = string.sub
+
+profile.start()
 
 local stream = input[1]
 
@@ -77,3 +80,5 @@ end
 
 printf("Part 1: %i\n", firstMarkerPosition(4))
 printf("Part 2: %i\n", firstMarkerPosition(14))
+
+profile.finish()

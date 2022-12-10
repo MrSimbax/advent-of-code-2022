@@ -1,10 +1,13 @@
-local eio = require "libs/eio"
-local sequence = require "libs/sequence"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
+local sequence = require "libs.sequence"
 
 local input = eio.lines()
 local printf = eio.printf
 local match = string.match
 local inversed = sequence.inversed
+
+profile.start()
 
 local Shape = {
     Rock = 1,
@@ -94,3 +97,5 @@ end
 
 printf("Part 1: %i\n", totalScore)
 printf("Part 2: %i\n", correctTotalScore)
+
+profile.finish()

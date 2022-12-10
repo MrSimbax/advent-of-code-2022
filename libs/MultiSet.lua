@@ -1,5 +1,5 @@
-local sequence = require "libs/sequence"
-local Set = require "libs/Set"
+local sequence = require "libs.sequence"
+local Set = require "libs.Set"
 
 local map = sequence.map
 local concat = table.concat

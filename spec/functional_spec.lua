@@ -1,4 +1,4 @@
-local F = require "libs/functional"
+local F = require "libs.functional"
 
 describe("functional module", function ()
     describe("has function lazy which", function ()

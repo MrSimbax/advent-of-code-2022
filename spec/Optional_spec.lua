@@ -1,4 +1,4 @@
-local Optional = require "libs/Optional"
+local Optional = require "libs.Optional"
 
 describe("Optional", function ()
     it("holds the payload when created with payload", function ()

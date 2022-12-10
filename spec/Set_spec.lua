@@ -1,4 +1,4 @@
-local Set = require "libs/Set"
+local Set = require "libs.Set"
 
 describe("Set", function ()
     describe(".fromSeq", function ()

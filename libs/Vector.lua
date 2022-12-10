@@ -1,4 +1,4 @@
-local seq = require "libs/sequence"
+local seq = require "libs.sequence"
 
 local setmetatable = setmetatable
 local getmetatable = getmetatable

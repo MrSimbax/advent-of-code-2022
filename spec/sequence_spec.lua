@@ -1,4 +1,4 @@
-local seq = require "libs/sequence"
+local seq = require "libs.sequence"
 
 describe("sequence module", function ()
     describe("has function id which", function ()

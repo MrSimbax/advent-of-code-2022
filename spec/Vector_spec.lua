@@ -1,4 +1,4 @@
-local Vec = require "libs/Vector"
+local Vec = require "libs.Vector"
 
 describe("Vector", function ()
     describe(".new", function ()

@@ -1,8 +1,11 @@
-local eio = require "libs/eio"
+local eio = require "libs.eio"
+local profile = require "libs.profile"
 
 local input = eio.lines()
 local printf = eio.printf
 local match = string.match
+
+profile.start()
 
 local function isOneRangeSubsetOfOther (a, b, c, d)
     return (a <= c and d <= b) or (c <= a and b <= d)
@@ -23,3 +26,5 @@ end
 
 printf("Part 1: %i\n", count1)
 printf("Part 2: %i\n", count2)
+
+profile.finish()

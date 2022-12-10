@@ -70,15 +70,15 @@ function mt.__div (u, v)
     end
 end
 
-function mt.__idiv (u, v)
-    if isVec(u) and isVec(v) then
-        return makeVec(u[1] // v[1], u[2] // v[2])
-    elseif isVec(u) then
-        return makeVec(u[1] // v, u[2] // v)
-    else
-        return error("attempt to divide vector by scalar", 2)
-    end
-end
+-- function mt.__idiv (u, v)
+--     if isVec(u) and isVec(v) then
+--         return makeVec(u[1] // v[1], u[2] // v[2])
+--     elseif isVec(u) then
+--         return makeVec(u[1] // v, u[2] // v)
+--     else
+--         return error("attempt to divide vector by scalar", 2)
+--     end
+-- end
 
 function mt.__mod (u, v)
     if isVec(u) and isVec(v) then

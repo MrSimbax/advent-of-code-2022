@@ -1,4 +1,4 @@
-local MultiSet = require "libs/MultiSet"
+local MultiSet = require "libs.MultiSet"
 
 describe("MultiSet", function ()
     describe(".new", function ()

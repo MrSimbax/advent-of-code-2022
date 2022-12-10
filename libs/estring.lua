@@ -10,7 +10,7 @@ local gmatch = string.gmatch
 function estring.split (str, delim)
     delim = delim or "%s"
     local t = {}
-    for word in gmatch(str, format("[^%s]*", delim)) do
+    for word in gmatch(str, format("[^%s]+", delim)) do
         t[#t + 1] = word
     end
     return t
