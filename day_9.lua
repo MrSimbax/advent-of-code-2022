@@ -1,33 +1,31 @@
 local eio = require "libs/eio"
-local F = require "libs/functional"
-local input = require "libs/input"
-local estring = require "libs/estring"
-local Vec = require "libs/Vector"
+local sequence = require "libs/sequence"
 local Set = require "libs/Set"
 local emath = require "libs/emath"
 
+local input = eio.lines()
+local printf = eio.printf
+local sgn = emath.sgn
+local match = string.match
+local makeSet = Set.fromSeq
+local insert = Set.add
+local makeSequence = sequence.sequence
+
 local dirFromChar = {
-    ['U'] = Vec{0, 1},
-    ['D'] = Vec{0, -1},
-    ['L'] = Vec{-1, 0},
-    ['R'] = Vec{1, 0}
+    ['U'] = {0, 1},
+    ['D'] = {0, -1},
+    ['L'] = {-1, 0},
+    ['R'] = {1, 0}
 }
 
 local function areTouching (head, tail)
-    return Vec.dist(head, tail) < 2
+    local a = head[1] - tail[1]
+    local b = head[2] - tail[2]
+    return a * a + b * b < 4
 end
 
-local function moveFromLine (line)
-    local dir, steps = table.unpack(estring.split(line))
-    return {dir, tonumber(steps)}
-end
-
-local function moves ()
-    return F.map(moveFromLine, input.lines())
-end
-
-local function dirTowardsHead (head, tail)
-    return Vec(F.map(emath.sgn, head - tail))
+local function vec2str (v)
+    return v[1] .. ',' .. v[2]
 end
 
 local function updateTail (rope, lastKnotPositions)
@@ -35,9 +33,10 @@ local function updateTail (rope, lastKnotPositions)
         local head = rope[i - 1]
         local tail = rope[i]
         if not areTouching(head, tail) then
-            tail = tail + dirTowardsHead(head, tail)
+            tail[1] = tail[1] + sgn(head[1] - tail[1])
+            tail[2] = tail[2] + sgn(head[2] - tail[2])
             if i == #rope then
-                Set.add(lastKnotPositions, tostring(tail))
+                insert(lastKnotPositions, vec2str(tail))
             end
             rope[i] = tail
         end
@@ -45,20 +44,24 @@ local function updateTail (rope, lastKnotPositions)
 end
 
 local function makeRope (ropeLength)
-    return F.sequence(function (_) return Vec{0, 0} end, ropeLength)
+    return makeSequence(function (_) return {0, 0} end, ropeLength)
 end
 
-local function moveRope (moves, rope)
-    local lastKnotPositions = Set.new{tostring(rope[#rope])}
-    for _, move in ipairs(moves) do
-        local dir, steps = table.unpack(move)
+local function moveRope (lines, rope)
+    local lastKnotPositions = makeSet{vec2str(rope[#rope])}
+    for i = 1, #lines do
+        local dir, steps = match(lines[i], "(%a) (%d+)")
+        dir = dirFromChar[dir]
+        steps = tonumber(steps)
         for _ = 1, steps do
-            rope[1] = rope[1] + dirFromChar[dir]
+            local head = rope[1]
+            head[1] = head[1] + dir[1]
+            head[2] = head[2] + dir[2]
             updateTail(rope, lastKnotPositions)
         end
     end
     return #lastKnotPositions
 end
 
-eio.printf("Part 1: %i\n", moveRope(moves(), makeRope(2)))
-eio.printf("Part 2: %i\n", moveRope(moves(), makeRope(10)))
+printf("Part 1: %i\n", moveRope(input, makeRope(2)))
+printf("Part 2: %i\n", moveRope(input, makeRope(10)))

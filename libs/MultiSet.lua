@@ -1,5 +1,8 @@
-local F = require "libs/functional"
+local sequence = require "libs/sequence"
 local Set = require "libs/Set"
+
+local map = sequence.map
+local concat = table.concat
 
 local MultiSet = {}
 
@@ -10,8 +13,9 @@ setmetatable(sizes, {__mode = "k"})
 
 function MultiSet.add (a, k, m)
     m = m or 1
-    if a[k] then
-        a[k] = a[k] + m
+    local c = a[k]
+    if c then
+        a[k] = c + m
     else
         a[k] = m
     end
@@ -20,10 +24,11 @@ end
 
 function MultiSet.del (a, k, m)
     m = m or 1
-    if a[k] then
-        local n = a[k] - m
+    local c = a[k]
+    if c then
+        local n = c - m
         if n <= 0 then
-            sizes[a] = sizes[a] - a[k]
+            sizes[a] = sizes[a] - c
             a[k] = nil
         else
             sizes[a] = sizes[a] - m
@@ -33,7 +38,7 @@ function MultiSet.del (a, k, m)
 end
 
 function MultiSet.toSet (a)
-    return Set.new(MultiSet.toSetSeq(a))
+    return Set.fromSeq(MultiSet.toSetSeq(a))
 end
 
 function MultiSet.isSet (a)
@@ -45,12 +50,12 @@ function MultiSet.isSet (a)
     return true
 end
 
-function MultiSet.new (list)
+function MultiSet.new (seq)
     local set = {}
     setmetatable(set, mt)
     sizes[set] = 0
-    for _, v in ipairs(list) do
-        MultiSet.add(set, v, 1)
+    for i = 1, #seq do
+        MultiSet.add(set, seq[i], 1)
     end
     return set
 end
@@ -150,13 +155,13 @@ end
 function MultiSet.toSetSeq (set)
     local seq = {}
     for k, _ in pairs(set) do
-        table.insert(seq, k)
+        seq[#seq + 1] = k
     end
     return seq
 end
 
 function MultiSet.toString (set)
-    return "{" .. table.concat(F.map(tostring, MultiSet.toSeq(set)), ", ") .. "}"
+    return "{" .. concat(map(tostring, MultiSet.toSeq(set)), ", ") .. "}"
 end
 
 mt.__tostring = MultiSet.toString

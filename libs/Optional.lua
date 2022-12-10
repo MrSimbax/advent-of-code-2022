@@ -3,9 +3,7 @@ local Optional = {}
 Optional.__index = Optional
 
 function Optional.new (payload)
-    local opt = {payload = payload}
-    setmetatable(opt, Optional)
-    return opt
+    return setmetatable({payload = payload}, Optional)
 end
 
 function Optional.empty ()

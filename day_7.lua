@@ -1,29 +1,36 @@
 local eio = require "libs/eio"
-local F = require "libs/functional"
-local input = require "libs/input"
 local estring = require "libs/estring"
-local etable = require "libs/etable"
+
+local input = eio.lines()
+local printf = eio.printf
+local split = estring.split
+local maxinteger = math.maxinteger
+local pairs = pairs
 
 local function makeDir (parent)
     return {parent = parent, dirs = {}, files = {}}
 end
 
-local function sizeFromDir (dir)
-    return dir.size
-end
-
 local function findDirSizes (root)
+    local size = 0
+
+    for _, fileSize in pairs(root.files) do
+        size = size + fileSize
+    end
+
     for _, dir in pairs(root.dirs) do
         findDirSizes(dir)
+        size = size + dir.size
     end
-    root.size = F.sum(F.values(root.files)) + F.sum(F.map(sizeFromDir, F.values(root.dirs)))
+
+    root.size = size
 end
 
-local function dirTreeFromLines (lines)
+local function dirTree ()
     local root = makeDir(nil)
     local currentDir = root
-    for _, line in ipairs(lines) do
-        local cmd = estring.split(line)
+    for i = 1, #input do
+        local cmd = split(input[i])
         if cmd[1] == "$" and cmd[2] == "cd" then
             local arg = cmd[3]
             if arg == "/" then
@@ -45,17 +52,29 @@ local function dirTreeFromLines (lines)
     return root
 end
 
-local function allDirSizes (root)
-    local dirs = {root.size}
+local function getSizes (root, sizes)
+    sizes[#sizes + 1] = root.size
     for _, dir in pairs(root.dirs) do
-        etable.concat(dirs, allDirSizes(dir))
+        getSizes(dir, sizes)
     end
-    return dirs
+    return sizes
 end
 
-local root = dirTreeFromLines(input.lines())
+local function totalSizeOfSmallDirs (sizes)
+    local total = 0
+    for i = 1, #sizes do
+        local size = sizes[i]
+        if size <= 100000 then
+            total = total + size
+        end
+    end
+    return total
+end
 
-eio.printf("Part 1: %i\n", F.sum(F.filter(function (size) return size <= 100000 end, allDirSizes(root))))
+local root = dirTree()
+local sizes = getSizes(root, {})
+
+printf("Part 1: %i\n", totalSizeOfSmallDirs(sizes))
 
 local function calcSpaceToFree (root)
     local usedSpace = root.size
@@ -65,9 +84,17 @@ local function calcSpaceToFree (root)
     return neededFreeSpace - freeSpace
 end
 
-local function sizeOfDirToDelete (root)
-    local spaceToFree = calcSpaceToFree(root)
-    return F.minimum(F.filter(function (size) return size >= spaceToFree end, allDirSizes(root)))
+local spaceToFree = calcSpaceToFree(root)
+
+local function sizeOfDirToDelete (sizes)
+    local minSize = maxinteger
+    for i = 1, #sizes do
+        local size = sizes[i]
+        if size >= spaceToFree and size < minSize then
+            minSize = size
+        end
+    end
+    return minSize
 end
 
-eio.printf("Part 2: %i\n", sizeOfDirToDelete(root))
+printf("Part 2: %i\n", sizeOfDirToDelete(sizes))

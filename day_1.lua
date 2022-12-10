@@ -1,20 +1,21 @@
 local eio = require "libs/eio"
-local F = require "libs/functional"
-local input = require "libs/input"
-local Optional = require "libs/Optional"
 
-local function optionalNumberFromLine (line)
-    return Optional.new(tonumber(line))
+local input = eio.lines()
+local printf = eio.printf
+local sort = table.sort
+
+local calories = {}
+local sum = 0
+for i = 1, #input do
+    local n = tonumber(input[i])
+    if n then
+        sum = sum + n
+    else
+        calories[#calories + 1] = sum
+        sum = 0
+    end
 end
+sort(calories)
 
-local function unpackOptionals (optionals)
-    return F.map(Optional.value, optionals)
-end
-
-local function loadInput ()
-    return F.map(unpackOptionals, F.split(Optional.empty(), F.map(optionalNumberFromLine, input.lines())))
-end
-
-local calories = F.map(F.sum, loadInput())
-eio.printf("Part 1: %i\n", F.maximum(calories))
-eio.printf("Part 2: %i\n", F.sum(F.take(3, F.reversed(F.sorted(calories)))))
+printf("Part 1: %i\n", calories[#calories])
+printf("Part 2: %i\n", calories[#calories] + calories[#calories - 1] + calories[#calories - 2])

@@ -1,7 +1,10 @@
 local eio = require "libs/eio"
-local estring = require "libs/estring"
-local F = require "libs/functional"
-local input = require "libs/input"
+local sequence = require "libs/sequence"
+
+local input = eio.lines()
+local printf = eio.printf
+local match = string.match
+local inversed = sequence.inversed
 
 local Shape = {
     Rock = 1,
@@ -20,11 +23,6 @@ local shapeFromPlayerChar = {
     ["Y"] = Shape.Paper,
     ["Z"] = Shape.Scissors
 }
-
-local function roundFromLine (line)
-    local opponentChar, playerChar = table.unpack(estring.split(line))
-    return {shapeFromOpponentChar[opponentChar], shapeFromPlayerChar[playerChar]}
-end
 
 local Outcome = {
     Loss = 1,
@@ -64,28 +62,13 @@ local function score (opponentShape, playerShape)
     return scoreFromShape[playerShape] + scoreFromOutcome[roundOutcome(opponentShape, playerShape)]
 end
 
-local function scoreFromRound (round)
-    return score(table.unpack(round))
-end
-
-local function sumScores (rounds)
-    return F.sum(F.map(scoreFromRound, rounds))
-end
-
-eio.printf("Part 1: %i\n", sumScores(F.map(roundFromLine, input.lines())))
-
 local desiredOutcomeFromChar = {
     ["X"] = Outcome.Loss,
     ["Y"] = Outcome.Draw,
     ["Z"] = Outcome.Win
 }
 
-local function roundStrategyFromLine (line)
-    local opponentChar, desiredOutcomeChar = table.unpack(estring.split(line))
-    return {shapeFromOpponentChar[opponentChar], desiredOutcomeFromChar[desiredOutcomeChar]}
-end
-
-local winningShapeAgainst = F.inversed(losingShapeAgainst)
+local winningShapeAgainst = inversed(losingShapeAgainst)
 
 local function shapeForOutcome (opponentShape, desiredOutcome)
     if desiredOutcome == Outcome.Draw then
@@ -97,9 +80,17 @@ local function shapeForOutcome (opponentShape, desiredOutcome)
     end
 end
 
-local function roundFromRoundStrategy (roundStrategy)
-    local opponentShape, desiredOutcome = table.unpack(roundStrategy)
-    return {opponentShape, shapeForOutcome(opponentShape, desiredOutcome)}
+local totalScore = 0
+local correctTotalScore = 0
+for i = 1, #input do
+    local opponentChar, char = match(input[i], "(%u) (%u)")
+    local opponentShape = shapeFromOpponentChar[opponentChar]
+    local playerShape = shapeFromPlayerChar[char]
+    local desiredOutcome = desiredOutcomeFromChar[char]
+    local correctPlayerShape = shapeForOutcome(opponentShape, desiredOutcome)
+    totalScore = totalScore + score(opponentShape, playerShape)
+    correctTotalScore = correctTotalScore + score(opponentShape, correctPlayerShape)
 end
 
-eio.printf("Part 2: %i\n", sumScores(F.map(F.compose(roundFromRoundStrategy, roundStrategyFromLine), input.lines())))
+printf("Part 1: %i\n", totalScore)
+printf("Part 2: %i\n", correctTotalScore)

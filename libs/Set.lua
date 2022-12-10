@@ -1,4 +1,9 @@
-local F = require "libs/functional"
+local seq = require "libs/sequence"
+
+local map = seq.map
+local concat = table.concat
+local len = string.len
+local sub = string.sub
 
 local Set = {}
 
@@ -7,40 +12,58 @@ local mt = {}
 local sizes = {}
 setmetatable(sizes, {__mode = "k"})
 
-function Set.add (a, k)
+local function add (a, k)
     if not a[k] then
         a[k] = true
         sizes[a] = sizes[a] + 1
     end
 end
 
-function Set.del (a, k)
+Set.add = add
+
+local function del (a, k)
     if a[k] then
         a[k] = nil
         sizes[a] = sizes[a] - 1
     end
 end
 
-function Set.new (list)
-    local set = {}
-    setmetatable(set, mt)
+Set.del = del
+
+local function makeSet ()
+    local set = setmetatable({}, mt)
     sizes[set] = 0
-    for _, v in ipairs(list) do
-        Set.add(set, v)
+    return set
+end
+
+function Set.fromSeq (as)
+    local set = makeSet()
+    for i = 1, #as do
+        add(set, as[i])
     end
     return set
 end
+
+function Set.fromString (str)
+    local set = makeSet()
+    for i = 1, len(str) do
+        add(set, sub(str, i, i))
+    end
+    return set
+end
+
+Set.new = makeSet
 
 function Set.union (a, b)
     if getmetatable(a) ~= mt or getmetatable(b) ~= mt then
         error("attempt to 'add' a set with a non-set value", 2)
     end
-    local res = Set.new{}
+    local res = makeSet()
     for k in pairs(a) do
-        Set.add(res, k)
+        add(res, k)
     end
     for k in pairs(b) do
-        Set.add(res, k)
+        add(res, k)
     end
     return res
 end
@@ -51,10 +74,10 @@ function Set.intersection (a, b)
     if getmetatable(a) ~= mt or getmetatable(b) ~= mt then
         error("attempt to 'multiply' a set with a non-set value", 2)
     end
-    local res = Set.new{}
+    local res = makeSet()
     for k in pairs(a) do
         if b[k] then
-            Set.add(res, k)
+            add(res, k)
         end
     end
     return res
@@ -66,10 +89,10 @@ function Set.difference (a, b)
     if getmetatable(a) ~= mt or getmetatable(b) ~= mt then
         error("attempt to 'subtract' a set with a non-set value, or the other way around", 2)
     end
-    local res = Set.new{}
+    local res = makeSet()
     for k in pairs(a) do
         if not b[k] then
-            Set.add(res, k)
+            add(res, k)
         end
     end
     return res
@@ -109,13 +132,19 @@ mt.__eq = Set.areEqual
 function Set.toSeq (set)
     local seq = {}
     for el in pairs(set) do
-        table.insert(seq, el)
+        seq[#seq + 1] = el
     end
     return seq
 end
 
 function Set.toString (set)
-    return "{" .. table.concat(F.map(tostring, Set.toSeq(set)), ", ") .. "}"
+    return "{" .. concat(map(tostring, Set.toSeq(set)), ", ") .. "}"
+end
+
+function Set.getAnyElement (set)
+    for el in pairs(set) do
+        return el
+    end
 end
 
 mt.__tostring = Set.toString

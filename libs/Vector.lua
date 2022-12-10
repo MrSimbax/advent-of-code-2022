@@ -1,18 +1,25 @@
-local F = require "libs/functional"
+local seq = require "libs/sequence"
+
+local setmetatable = setmetatable
+local getmetatable = getmetatable
+local rawget = rawget
+local rawset = rawset
+local map = seq.map
 
 local Vector = {}
 
 local mt = {}
 
-function Vector.new (a)
-    setmetatable(a, mt)
-    return a
+local function makeVec (a)
+    return setmetatable(a, mt)
 end
 
-setmetatable(Vector, {__call = function (_, ...) return Vector.new(...) end})
+Vector.new = makeVec
+
+setmetatable(Vector, {__call = function (_, ...) return makeVec(...) end})
 
 function mt.__add (u, v)
-    local r = Vector.new{}
+    local r = makeVec{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] + v[i]
@@ -30,7 +37,7 @@ function mt.__add (u, v)
 end
 
 function mt.__mul (u, v)
-    local r = Vector.new{}
+    local r = makeVec{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] * v[i]
@@ -48,7 +55,7 @@ function mt.__mul (u, v)
 end
 
 function mt.__sub (u, v)
-    local r = Vector.new{}
+    local r = makeVec{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] - v[i]
@@ -64,7 +71,7 @@ function mt.__sub (u, v)
 end
 
 function mt.__div (u, v)
-    local r = Vector.new{}
+    local r = makeVec{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] / v[i]
@@ -80,7 +87,7 @@ function mt.__div (u, v)
 end
 
 function mt.__idiv (u, v)
-    local r = Vector.new{}
+    local r = makeVec{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] // v[i]
@@ -96,7 +103,7 @@ function mt.__idiv (u, v)
 end
 
 function mt.__mod (u, v)
-    local r = Vector.new{}
+    local r = makeVec{}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] % v[i]
@@ -112,7 +119,7 @@ function mt.__mod (u, v)
 end
 
 function mt.__unm (u)
-    local r = Vector.new{}
+    local r = makeVec{}
     for i = 1, #u do
         r[i] = -u[i]
     end
@@ -169,7 +176,7 @@ function mt.__index (vec, key)
         if key:len() == 1 then
             return rawget(vec, indexFromChar[key])
         else
-            local rs = Vector.new{}
+            local rs = makeVec{}
             for c in key:gmatch(".") do
                 table.insert(rs, rawget(vec, indexFromChar[c]))
             end
@@ -212,14 +219,13 @@ function Vector.dist (u, v)
 end
 
 function mt.__tostring (v)
-    return "[" .. table.concat(F.map(tostring, v), ", ") .. "]"
+    return "[" .. table.concat(map(tostring, v), ", ") .. "]"
 end
 
 local multidimMt = {}
 
 function Vector.allowVectorIndices (t)
-    setmetatable(t, multidimMt)
-    return t
+    return setmetatable(t, multidimMt)
 end
 
 function multidimMt.__index (t, key)
