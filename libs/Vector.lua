@@ -19,7 +19,7 @@ Vector.new = makeVec
 setmetatable(Vector, {__call = function (_, ...) return makeVec(...) end})
 
 function mt.__add (u, v)
-    local r = makeVec{}
+    local r = {}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] + v[i]
@@ -33,11 +33,11 @@ function mt.__add (u, v)
             r[i] = u + v[i]
         end
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__mul (u, v)
-    local r = makeVec{}
+    local r = {}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] * v[i]
@@ -51,11 +51,11 @@ function mt.__mul (u, v)
             r[i] = u * v[i]
         end
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__sub (u, v)
-    local r = makeVec{}
+    local r = {}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] - v[i]
@@ -67,11 +67,11 @@ function mt.__sub (u, v)
     else
         error("attempt to subtract vector from scalar", 2)
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__div (u, v)
-    local r = makeVec{}
+    local r = {}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] / v[i]
@@ -83,11 +83,11 @@ function mt.__div (u, v)
     else
         error("attempt to divide scalar by vector", 2)
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__idiv (u, v)
-    local r = makeVec{}
+    local r = {}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] // v[i]
@@ -99,11 +99,11 @@ function mt.__idiv (u, v)
     else
         error("attempt to divide scalar by vector", 2)
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__mod (u, v)
-    local r = makeVec{}
+    local r = {}
     if getmetatable(u) == mt and getmetatable(v) == mt then
         for i = 1, #u do
             r[i] = u[i] % v[i]
@@ -115,15 +115,15 @@ function mt.__mod (u, v)
     else
         error("attempt to take scalar modulo vector", 2)
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__unm (u)
-    local r = makeVec{}
+    local r = {}
     for i = 1, #u do
         r[i] = -u[i]
     end
-    return r
+    return makeVec(r)
 end
 
 function mt.__eq (u, v)
@@ -172,33 +172,25 @@ local indexFromChar = {
 }
 
 function mt.__index (vec, key)
-    if type(key) == "string" then
-        if key:len() == 1 then
-            return rawget(vec, indexFromChar[key])
-        else
-            local rs = makeVec{}
-            for c in key:gmatch(".") do
-                table.insert(rs, rawget(vec, indexFromChar[c]))
-            end
-            return rs
-        end
+    if key:len() == 1 then
+        return rawget(vec, indexFromChar[key])
     else
-        return rawget(vec, key)
+        local rs = {}
+        for c in key:gmatch(".") do
+            table.insert(rs, rawget(vec, indexFromChar[c]))
+        end
+        return makeVec(rs)
     end
 end
 
 function mt.__newindex (vec, key, value)
-    if type(key) == "string" then
-        if key:len() == 1 then
-            return rawset(vec, indexFromChar[key], value)
-        else
-            for i = 1, key:len() do
-                rawset(vec, indexFromChar[key:sub(i, i)], value[i])
-            end
-            return vec
-        end
+    if key:len() == 1 then
+        return rawset(vec, indexFromChar[key], value)
     else
-        return rawset(vec, key, value)
+        for i = 1, key:len() do
+            rawset(vec, indexFromChar[key:sub(i, i)], value[i])
+        end
+        return vec
     end
 end
 

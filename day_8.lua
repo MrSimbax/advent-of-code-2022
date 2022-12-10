@@ -1,20 +1,12 @@
 local eio = require "libs/eio"
+local Vec2 = require "libs/Vec2"
 
 local input = eio.lines()
 local printf = eio.printf
 local sub = string.sub
-
-local function make2dArray (width, height, init)
-    local r = {}
-    for y = 1, height do
-        local row = {}
-        for x = 1, width do
-            row[x] = init
-        end
-        r[y] = row
-    end
-    return r
-end
+local Vec = Vec2.makeVec
+local Grid = Vec2.allowVec2Indices
+local makeGrid = Vec2.makeGrid
 
 local function forest ()
     local r = {}
@@ -26,45 +18,44 @@ local function forest ()
         end
         r[y] = row
     end
-    return r
+    return Grid(r)
 end
 
-local function isValidCoord (m, y, x)
-    return 1 <= y and y <= #m and 1 <= x and x <= #m[1]
+local function isValidCoord (m, p)
+    return 1 <= p[1] and p[1] <= #m and 1 <= p[2] and p[2] <= #m[1]
 end
 
-local function countVisibleFromEdge (forest, originY, originX, dirY, dirX, isVisible)
+local function countVisibleFromEdge (forest, origin, dir, isVisible)
     local count = 0
     local maxHeight = -1
-    while isValidCoord(forest, originY, originX) do
-        local height = forest[originY][originX]
+    while isValidCoord(forest, origin) do
+        local height = forest[origin]
 
         if height > maxHeight then
-            if not isVisible[originY][originX] then
+            if not isVisible[origin] then
                 count = count + 1
-                isVisible[originY][originX] = true
+                isVisible[origin] = true
             end
             maxHeight = height
         end
 
-        originY = originY + dirY
-        originX = originX + dirX
+        origin = origin + dir
     end
     return count
 end
 
 local function countAllVisibleFromEdges (forest)
-    local isVisible = make2dArray(#forest[1], #forest, false)
+    local isVisible = makeGrid(#forest[1], #forest, false)
     local count = 0
     for y = 1, #forest do
         count = count
-              + countVisibleFromEdge(forest, y, 1,          0,  1, isVisible)
-              + countVisibleFromEdge(forest, y, #forest[y], 0, -1, isVisible)
+              + countVisibleFromEdge(forest, Vec(y, 1), Vec(0, 1), isVisible)
+              + countVisibleFromEdge(forest, Vec(y, #forest[y]), Vec(0, -1), isVisible)
     end
     for x = 1, #forest[1] do
         count = count
-              + countVisibleFromEdge(forest, 1, x,        1, 0, isVisible)
-              + countVisibleFromEdge(forest, #forest, x, -1, 0, isVisible)
+              + countVisibleFromEdge(forest, Vec(1, x), Vec(1, 0), isVisible)
+              + countVisibleFromEdge(forest, Vec(#forest, x), Vec(-1, 0), isVisible)
     end
     return count
 end
@@ -75,35 +66,33 @@ local function makeTree (height, treesBehind)
     return {height, treesBehind}
 end
 
-local function findScoresInLine (forest, originY, originX, dirY, dirX, scenicScores)
+local function findScoresInLine (forest, origin, dir, scenicScores)
     local blockingTrees = {makeTree(10, 0)}
     local treesBehind = 0
-    while isValidCoord(forest, originY, originX) do
-        local height = forest[originY][originX]
+    while isValidCoord(forest, origin) do
+        local height = forest[origin]
 
         while blockingTrees[#blockingTrees][1] < height do
             blockingTrees[#blockingTrees] = nil
         end
 
-        scenicScores[originY][originX] = scenicScores[originY][originX]
-                                       * (treesBehind - blockingTrees[#blockingTrees][2])
+        scenicScores[origin] = scenicScores[origin] * (treesBehind - blockingTrees[#blockingTrees][2])
         blockingTrees[#blockingTrees + 1] = makeTree(height, treesBehind)
         treesBehind = treesBehind + 1
 
-        originY = originY + dirY
-        originX = originX + dirX
+        origin = origin + dir
     end
 end
 
 local function findScenicScores (forest)
-    local scenicScores = make2dArray(#forest[1], #forest, 1)
+    local scenicScores = makeGrid(#forest[1], #forest, 1)
     for y = 1, #forest do
-        findScoresInLine(forest, y, 1,          0,  1, scenicScores)
-        findScoresInLine(forest, y, #forest[y], 0, -1, scenicScores)
+        findScoresInLine(forest, Vec(y, 1), Vec(0, 1), scenicScores)
+        findScoresInLine(forest, Vec(y, #forest[y]), Vec(0, -1), scenicScores)
     end
     for x = 1, #forest[1] do
-        findScoresInLine(forest, 1, x,        1, 0, scenicScores)
-        findScoresInLine(forest, #forest, x, -1, 0, scenicScores)
+        findScoresInLine(forest, Vec(1, x), Vec(1, 0), scenicScores)
+        findScoresInLine(forest, Vec(#forest, x), Vec(-1, 0), scenicScores)
     end
     return scenicScores
 end
