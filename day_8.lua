@@ -82,7 +82,7 @@ local function findScoresInLine (forest, originY, originX, dirY, dirX, scenicSco
         local height = forest[originY][originX]
 
         while blockingTrees[#blockingTrees][1] < height do
-            table.remove(blockingTrees)
+            blockingTrees[#blockingTrees] = nil
         end
 
         scenicScores[originY][originX] = scenicScores[originY][originX]
