@@ -31,6 +31,14 @@ local function sum (as)
     return reduce(plus, 0, as)
 end
 
+local function mult (a, b)
+    return a * b
+end
+
+local function product (as)
+    return reduce(mult, 1, as)
+end
+
 local function maximum (as)
     local m = as[1]
     for i = 2, #as do
@@ -279,5 +287,6 @@ return {
     keys = keys,
     values = values,
     find = find,
-    equals = equals
+    equals = equals,
+    product = product
 }

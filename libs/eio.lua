@@ -8,7 +8,11 @@ local find = string.find
 local floor = math.floor
 
 local function basicShow (o)
-    return format("%q", o)
+    if type(o) == "function" then
+        return format("%p", o)
+    else
+        return format("%q", o)
+    end
 end
 
 local function isLuaId (k)
@@ -35,7 +39,7 @@ local function showRecursive (name, value, key, saved, indent, hideKey)
         keyStr = basicShowKey(key) .. " = "
     end
     local valueType = type(value)
-    if valueType == "number" or valueType == "string"  or valueType == "boolean" or valueType == "nil" then
+    if valueType == "number" or valueType == "string"  or valueType == "boolean" or valueType == "nil" or valueType == "function" then
         write(indent, keyStr, basicShow(value))
     elseif valueType == "table" then
         if saved[value] then
