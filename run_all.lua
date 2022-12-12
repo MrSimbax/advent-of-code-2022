@@ -57,7 +57,7 @@ end
 
 local totalTimeTaken = 0
 for day = 1, maxDay do
-    print(font.sub(string.format("${bold}################################### Day %02i #####################################${normal}", day)))
+    print(font.sub(string.format("${bold}################################### Day %2i #####################################${normal}", day)))
     local luaFilename = string.format("day_%i.lua", day)
     local inputFilename = string.format("input_%i.txt", day)
 

@@ -5,7 +5,7 @@ local sequence = require "libs.sequence"
 local input = eio.lines()
 local printf = eio.printf
 local match = string.match
-local inversed = sequence.inversed
+local dual = sequence.dual
 
 profile.start()
 
@@ -71,7 +71,7 @@ local desiredOutcomeFromChar = {
     ["Z"] = Outcome.Win
 }
 
-local winningShapeAgainst = inversed(losingShapeAgainst)
+local winningShapeAgainst = dual(losingShapeAgainst)
 
 local function shapeForOutcome (opponentShape, desiredOutcome)
     if desiredOutcome == Outcome.Draw then

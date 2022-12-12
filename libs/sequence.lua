@@ -111,7 +111,7 @@ local function last (as)
     return as[#as]
 end
 
-local function inversed (t)
+local function dual (t)
     local r = {}
     for k, v in pairs(t) do
         r[v] = k
@@ -258,6 +258,12 @@ local function equals (x)
     return function (y) return x == y end
 end
 
+local function dualSwap (seq, dualSeq, i, j)
+    seq[i], seq[j] = seq[j], seq[i]
+    dualSeq[seq[i]] = i
+    dualSeq[seq[j]] = j
+end
+
 return {
     id = id,
     copy = copy,
@@ -273,7 +279,7 @@ return {
     skip = skip,
     first = first,
     last = last,
-    inversed = inversed,
+    dual = dual,
     compose = compose,
     groupsOf = groupsOf,
     collect = collect,
@@ -288,5 +294,6 @@ return {
     values = values,
     find = find,
     equals = equals,
-    product = product
+    product = product,
+    dualSwap = dualSwap
 }

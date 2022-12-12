@@ -174,13 +174,13 @@ describe("sequence module", function ()
         end)
     end)
 
-    describe("has function inversed which", function ()
+    describe("has function dual which", function ()
         it("returns a dual table", function ()
-            assert.are.same({[1] = "a", [2] = "b", [3] = "c"}, seq.inversed{a = 1, b = 2, c = 3})
+            assert.are.same({[1] = "a", [2] = "b", [3] = "c"}, seq.dual{a = 1, b = 2, c = 3})
         end)
 
         it("returns empty table for empty table", function ()
-            assert.are.same({}, seq.inversed{})
+            assert.are.same({}, seq.dual{})
         end)
     end)
 

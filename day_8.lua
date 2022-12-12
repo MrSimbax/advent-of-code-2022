@@ -8,6 +8,7 @@ local sub = string.sub
 local Vec = Vec2.makeVec
 local Grid = Vec2.allowVec2Indices
 local makeGrid = Vec2.makeGrid
+local isValidCoord = Vec2.isValidCoord2d
 
 profile.start()
 
@@ -22,10 +23,6 @@ local function forest ()
         r[y] = row
     end
     return Grid(r)
-end
-
-local function isValidCoord (m, p)
-    return 1 <= p[1] and p[1] <= #m and 1 <= p[2] and p[2] <= #m[1]
 end
 
 local function countVisibleFromEdge (forest, origin, dir, isVisible)

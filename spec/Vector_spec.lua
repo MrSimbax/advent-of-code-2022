@@ -155,7 +155,7 @@ describe("Vector", function ()
     end)
 
     it("allows composing operators", function()
-        assert.are.same(Vec{1}, ((((Vec{1} + Vec{1}) * Vec{3}) / Vec{2}) / Vec{2}) % Vec{2})
+        assert.are.same(Vec{1}, (((Vec{1} + Vec{1}) * Vec{3}) / Vec{2}) % Vec{2})
     end)
 
     describe("allows swizzling", function ()

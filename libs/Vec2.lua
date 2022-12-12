@@ -158,6 +158,10 @@ local function makeGrid (width, height, value)
     return allowVec2Indices(grid)
 end
 
+local function isValidCoord2d (array2d, coord)
+    return 1 <= coord[1] and coord[1] <= #array2d and 1 <= coord[2] and coord[2] <= #array2d[1]
+end
+
 return {
     makeVec = makeVec,
     dot = dot,
@@ -166,5 +170,6 @@ return {
     allowVec2Indices = allowVec2Indices,
     makeGrid = makeGrid,
     map = map,
-    isVec = isVec
+    isVec = isVec,
+    isValidCoord2d = isValidCoord2d
 }
