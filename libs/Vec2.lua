@@ -135,7 +135,11 @@ local function allowVec2Indices (t)
 end
 
 function mtArray2d.__index (t, v)
-    return t[v[1]][v[2]]
+    if isVec(v) then
+        return t[v[1]][v[2]]
+    else
+        return rawget(t, v)
+    end
 end
 
 function mtArray2d.__newindex (t, v, x)
@@ -161,5 +165,6 @@ return {
     dist = dist,
     allowVec2Indices = allowVec2Indices,
     makeGrid = makeGrid,
-    map = map
+    map = map,
+    isVec = isVec
 }
