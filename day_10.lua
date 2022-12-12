@@ -1,8 +1,10 @@
 local profile = require "libs.profile"
+local eio = require "libs.eio"
 
+local printf = eio.printf
 local match = string.match
-local write = io.write
 local abs = math.abs
+local concat = table.concat
 
 profile.start()
 
@@ -10,6 +12,11 @@ local X = 1
 local cycle = 0
 local cpu = {}
 local totalStrength = 0
+local crt = {}
+
+local function display (str)
+    crt[#crt + 1] = str
+end
 
 local function nextCycle ()
     cycle = cycle + 1
@@ -21,13 +28,13 @@ local function nextCycle ()
     local pos = (cycle - 1) % 40
 
     if pos == 0 then
-        write("\n")
+        display("\n")
     end
 
     if abs(X - pos) <= 1 then
-        write("#")
+        display("#")
     else
-        write(".")
+        display(".")
     end
 end
 
@@ -48,9 +55,12 @@ local function run ()
     end
 end
 
-
-write("Part 2:")
 run()
-write("\nPart 1: ", totalStrength, "\n")
 
-profile.finish()
+local answer1 = totalStrength
+printf("Part 1: %i\n", answer1)
+
+local answer2 = concat(crt)
+printf("Part 2: %s\n", answer2)
+
+return answer1, answer2, profile.finish()

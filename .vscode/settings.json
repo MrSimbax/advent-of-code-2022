@@ -3,5 +3,8 @@
         "${3rd}/busted/library",
         "${3rd}/luassert/library"
     ],
-    "Lua.completion.autoRequire": false
+    "Lua.completion.autoRequire": false,
+    "Lua.diagnostics.disable": [
+        "deprecated"
+    ],
 }

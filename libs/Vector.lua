@@ -86,21 +86,21 @@ function mt.__div (u, v)
     return makeVec(r)
 end
 
-function mt.__idiv (u, v)
-    local r = {}
-    if getmetatable(u) == mt and getmetatable(v) == mt then
-        for i = 1, #u do
-            r[i] = u[i] // v[i]
-        end
-    elseif getmetatable(u) == mt then
-        for i = 1, #u do
-            r[i] = u[i] // v
-        end
-    else
-        error("attempt to divide scalar by vector", 2)
-    end
-    return makeVec(r)
-end
+-- function mt.__idiv (u, v)
+--     local r = {}
+--     if getmetatable(u) == mt and getmetatable(v) == mt then
+--         for i = 1, #u do
+--             r[i] = u[i] // v[i]
+--         end
+--     elseif getmetatable(u) == mt then
+--         for i = 1, #u do
+--             r[i] = u[i] // v
+--         end
+--     else
+--         error("attempt to divide scalar by vector", 2)
+--     end
+--     return makeVec(r)
+-- end
 
 function mt.__mod (u, v)
     local r = {}

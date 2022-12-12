@@ -78,7 +78,10 @@ local function firstMarkerPosition (len)
     return i
 end
 
-printf("Part 1: %i\n", firstMarkerPosition(4))
-printf("Part 2: %i\n", firstMarkerPosition(14))
+local answer1 = firstMarkerPosition(4)
+printf("Part 1: %i\n", answer1)
 
-profile.finish()
+local answer2 = firstMarkerPosition(14)
+printf("Part 2: %i\n", answer2)
+
+return answer1, answer2, profile.finish()

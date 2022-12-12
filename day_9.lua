@@ -61,7 +61,10 @@ local function moveRope (lines, rope)
     return #lastKnotPositions
 end
 
-printf("Part 1: %i\n", moveRope(input, makeRope(2)))
-printf("Part 2: %i\n", moveRope(input, makeRope(10)))
+local answer1 = moveRope(input, makeRope(2))
+printf("Part 1: %i\n", answer1)
 
-profile.finish()
+local answer2 = moveRope(input, makeRope(10))
+printf("Part 2: %i\n", answer2)
+
+return answer1, answer2, profile.finish()

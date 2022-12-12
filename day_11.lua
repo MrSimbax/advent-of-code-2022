@@ -15,7 +15,7 @@ local tonumber = tonumber
 local map = sequence.map
 local sort = table.sort
 local product = sequence.product
-local huge = math.maxinteger or (2^53)
+local huge = 2^53
 
 profile.start()
 
@@ -162,13 +162,15 @@ for _ = 1, (DEBUG_LOGS and 1 or 20) do
     simulateRound(monkeys, n, DONT_USE_MODULO)
 end
 
-printf("Part 1: %i\n", monkeyBusiness(monkeys))
+local answer1 = monkeyBusiness(monkeys)
+printf("Part 1: %i\n", answer1)
 
 monkeys, n = parseInput(USE_MODULO)
 for _ = 1, (DEBUG_LOGS and 1 or 10000) do
     simulateRound(monkeys, n, USE_MODULO)
 end
 
-printf("Part 2: %i\n", monkeyBusiness(monkeys))
+local answer2 = monkeyBusiness(monkeys)
+printf("Part 2: %i\n", answer2)
 
-profile.finish()
+return answer1, answer2, profile.finish()

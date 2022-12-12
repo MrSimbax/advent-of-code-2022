@@ -41,7 +41,10 @@ local function sumPrioritiesOfCommonItemsInThreeBags ()
     return sum
 end
 
-printf("Part 1: %i\n", sumPrioritiesOfCommonItemsInCompartments())
-printf("Part 2: %i\n", sumPrioritiesOfCommonItemsInThreeBags())
+local answer1 = sumPrioritiesOfCommonItemsInCompartments()
+printf("Part 1: %i\n", answer1)
 
-profile.finish()
+local answer2 = sumPrioritiesOfCommonItemsInThreeBags()
+printf("Part 2: %i\n", answer2)
+
+return answer1, answer2, profile.finish()

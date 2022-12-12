@@ -27,4 +27,4 @@ end
 printf("Part 1: %i\n", count1)
 printf("Part 2: %i\n", count2)
 
-profile.finish()
+return count1, count2, profile.finish()

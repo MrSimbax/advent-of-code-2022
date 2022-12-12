@@ -77,7 +77,8 @@ end
 local root = dirTree()
 local sizes = getSizes(root, {})
 
-printf("Part 1: %i\n", totalSizeOfSmallDirs(sizes))
+local answer1 = totalSizeOfSmallDirs(sizes)
+printf("Part 1: %i\n", answer1)
 
 local function calcSpaceToFree (root)
     local usedSpace = root.size
@@ -100,6 +101,7 @@ local function sizeOfDirToDelete (sizes)
     return minSize
 end
 
-printf("Part 2: %i\n", sizeOfDirToDelete(sizes))
+local answer2 = sizeOfDirToDelete(sizes)
+printf("Part 2: %i\n", answer2)
 
-profile.finish()
+return answer1, answer2, profile.finish()

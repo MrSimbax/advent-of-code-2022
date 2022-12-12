@@ -20,7 +20,10 @@ for i = 1, #input do
 end
 sort(calories)
 
-printf("Part 1: %i\n", calories[#calories])
-printf("Part 2: %i\n", calories[#calories] + calories[#calories - 1] + calories[#calories - 2])
+local answer1 = calories[#calories]
+printf("Part 1: %i\n", answer1)
 
-profile.finish()
+local answer2 = calories[#calories] + calories[#calories - 1] + calories[#calories - 2]
+printf("Part 2: %i\n", answer2)
+
+return answer1, answer2, profile.finish()

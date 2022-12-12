@@ -63,7 +63,8 @@ local function countAllVisibleFromEdges (forest)
     return count
 end
 
-printf("Part 1: %i\n", countAllVisibleFromEdges(forest()))
+local answer1 = countAllVisibleFromEdges(forest())
+printf("Part 1: %i\n", answer1)
 
 local function makeTree (height, treesBehind)
     return {height, treesBehind}
@@ -114,6 +115,7 @@ local function findMax (scores)
     return m
 end
 
-printf("Part 2: %i\n", findMax(findScenicScores(forest())))
+local answer2 = findMax(findScenicScores(forest()))
+printf("Part 2: %i\n", answer2)
 
-profile.finish()
+return answer1, answer2, profile.finish()

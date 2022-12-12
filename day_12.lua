@@ -217,7 +217,8 @@ local graph = graphFromGrid(grid)
 -- eio.show("graph", graph[Vec(1,1)])
 local path = findshortestpath(graph, graph[s], graph[e])
 
-printf("Part 1: %i\n", #path - 1)
+local answer1 = #path - 1
+printf("Part 1: %i\n", answer1)
 
 local minSteps = math.huge
 for _, a in ipairs(ss) do
@@ -227,7 +228,8 @@ for _, a in ipairs(ss) do
     end
 end
 
-printf("Part 2: %i\n", minSteps)
+local answer2 = minSteps
+printf("Part 2: %i\n", answer2)
 
-profile.finish()
+return answer1, answer2, profile.finish()
 

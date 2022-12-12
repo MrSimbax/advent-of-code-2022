@@ -98,4 +98,4 @@ end
 printf("Part 1: %i\n", totalScore)
 printf("Part 2: %i\n", correctTotalScore)
 
-profile.finish()
+return totalScore, correctTotalScore, profile.finish()

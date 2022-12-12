@@ -67,7 +67,10 @@ local function moveCrates (mover)
     return tops(stacks)
 end
 
-printf("Part 1: %s\n", moveCrates(crateMover9000))
-printf("Part 2: %s\n", moveCrates(crateMover9001))
+local answer1 = moveCrates(crateMover9000)
+printf("Part 1: %s\n", answer1)
 
-profile.finish()
+local answer2 = moveCrates(crateMover9001)
+printf("Part 2: %s\n", answer2)
+
+return answer1, answer2, profile.finish()
