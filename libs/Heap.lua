@@ -31,11 +31,10 @@ function Heap:isEmpty ()
     return #self.heap == 0
 end
 
-function Heap:heapify (i)
+function Heap:moveDown (i)
     local heap = self.heap
 
     if i > floor(#heap / 2) then
-        -- leaf
         return
     end
 
@@ -54,13 +53,13 @@ function Heap:heapify (i)
     end
     if best ~= root then
         dualSwap(heap, dualHeap, best, root)
-        return self:heapify(best)
+        return self:moveDown(best)
     end
 end
 
 function Heap:build ()
     for i = floor(#self / 2), 1, -1 do
-        self:heapify(i)
+        self:moveDown(i)
     end
 end
 
@@ -71,7 +70,7 @@ end
 function Heap:extractBest ()
     local heap = self.heap
     if #heap == 0 then
-        error("attempt to extract from empty heap", 1)
+        error("attempt to extract from empty heap", 2)
     end
 
     local dualHeap = self.dualHeap
@@ -88,7 +87,7 @@ function Heap:extractBest ()
     end
 
     -- fix the heap
-    self:heapify(1)
+    self:moveDown(1)
 
     return ret
 end
