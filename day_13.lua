@@ -12,7 +12,7 @@ local function lt (a, b)
     local ta = type(a)
     local tb = type(b)
     if ta == "number" and tb == "number" then
-        return a < b and true or a == b and nil
+        return a < b or a == b and nil
     elseif ta == "number" and tb == "table" then
         return lt({a}, b)
     elseif ta == "table" and tb == "number" then
