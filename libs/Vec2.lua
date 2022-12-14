@@ -1,6 +1,7 @@
 local sqrt = math.sqrt
 local setmetatable = setmetatable
 local getmetatable = getmetatable
+local floor = math.floor
 
 local mt = {}
 
@@ -27,7 +28,7 @@ local function makeVec (x, y)
 end
 
 local function isVec (v)
-    return getmetatable(v) ~= nil
+    return getmetatable(v) == mt
 end
 
 function mt.__add (u, v)
@@ -70,15 +71,17 @@ function mt.__div (u, v)
     end
 end
 
--- function mt.__idiv (u, v)
---     if isVec(u) and isVec(v) then
---         return makeVec(u[1] // v[1], u[2] // v[2])
---     elseif isVec(u) then
---         return makeVec(u[1] // v, u[2] // v)
---     else
---         return error("attempt to divide vector by scalar", 2)
---     end
--- end
+local function idiv (u, v)
+    if isVec(u) and isVec(v) then
+        return makeVec(floor(u[1] / v[1]), floor(u[2] / v[2]))
+    elseif isVec(u) then
+        return makeVec(floor(u[1] / v), floor(u[2] / v))
+    else
+        return error("attempt to divide vector by scalar", 2)
+    end
+end
+
+mt.__idiv = idiv
 
 function mt.__mod (u, v)
     if isVec(u) and isVec(v) then
@@ -136,14 +139,24 @@ end
 
 function mtArray2d.__index (t, v)
     if isVec(v) then
-        return t[v[1]][v[2]]
+        local a = t[v[1]]
+        return a and a[v[2]] or nil
     else
         return rawget(t, v)
     end
 end
 
 function mtArray2d.__newindex (t, v, x)
-    t[v[1]][v[2]] = x
+    if isVec(v) then
+        local a = t[v[1]]
+        if not a then
+            a = {}
+            t[v[1]] = a
+        end
+        a[v[2]] = x
+    else
+        return rawset(t, v, x)
+    end
 end
 
 local function makeGrid (width, height, value)
@@ -171,5 +184,6 @@ return {
     makeGrid = makeGrid,
     map = map,
     isVec = isVec,
-    isValidCoord2d = isValidCoord2d
+    isValidCoord2d = isValidCoord2d,
+    idiv = idiv
 }

@@ -5,6 +5,7 @@
     ],
     "Lua.completion.autoRequire": false,
     "Lua.diagnostics.disable": [
-        "deprecated"
+        "deprecated",
+        "cast-local-type"
     ],
 }
