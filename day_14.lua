@@ -6,7 +6,6 @@ local estring = require "libs.estring"
 local input = eio.lines()
 local printf = eio.printf
 local Vec = Vec2.makeVec
-local Grid = Vec2.allowVec2Indices
 local split = estring.split
 local norm = Vec2.norm
 local vmap = Vec2.map
@@ -18,29 +17,28 @@ local function posFromStr (str)
     return vmap(tonumber, split(str, ","))
 end
 
-local function gridSet (grid, pos, value)
-    grid[pos] = value
+local function gridSet (grid, pos)
+    grid[pos] = true
     if pos[2] > grid.bottom then
         grid.bottom = pos[2]
     end
 end
 
 local function getGrid ()
-    local grid = Grid{}
-    grid.bottom = -1
+    local grid = {bottom = -1}
     for i = 1, #input do
         local line = input[i]
         local positions = split(line)
         local startPos = posFromStr(positions[1])
-        gridSet(grid, startPos, "#")
+        gridSet(grid, startPos)
         for j = 3, #positions, 2 do
             local endPos = posFromStr(positions[j])
-            gridSet(grid, endPos, "#")
+            gridSet(grid, endPos)
             local dir = endPos - startPos
             dir = vidiv(dir, norm(dir))
             local pos = startPos + dir
             while pos ~= endPos do
-                gridSet(grid, pos, "#")
+                gridSet(grid, pos)
                 pos = pos + dir
             end
             startPos = endPos
@@ -94,7 +92,7 @@ local answer1 = runSimulation(getGrid(), isNotOccupied, isBelowBottom)
 printf("Part 1: %i\n", answer1)
 
 local function cantPour (grid, _)
-    return grid[Vec(500, 0)] == "o"
+    return grid[Vec(500, 0)]
 end
 
 local function isNotOccupiedAndNotFloor (grid, pos)
