@@ -6,7 +6,6 @@ local sequence = require "libs.sequence"
 
 local input = eio.lines
 local printf = eio.printf
-local show = eio.show
 local split = estring.split
 local makeDeque = Deque.new
 local sub = string.sub
@@ -15,20 +14,12 @@ local tonumber = tonumber
 local map = sequence.map
 local sort = table.sort
 local product = sequence.product
-local huge = 2^53
+local maxinteger = 2^53
 
 profile.start()
 
-local DEBUG_LOGS = false
-
 local USE_MODULO = true
 local DONT_USE_MODULO = false
-
-local function debug (...)
-    if DEBUG_LOGS then
-        printf(...)
-    end
-end
 
 local function makeMonkey (items, operation, test, onTrue, onFalse, n)
     return {
@@ -45,32 +36,25 @@ end
 local ops = {
     ["+"] = function (b)
         return function (a, m)
-            local r = (a + b) % m
-            debug("    Worry level increases by %i to %i.\n", b, r)
-            return r
+            return (a + b) % m
         end
     end,
     ["*"] = function (b)
         return function (a, m)
             local b = b or a
-            local r = (a * b) % m
-            debug("    Worry level is multiplied by %i to %i.\n", b, r)
-            return r
+            return (a * b) % m
         end
     end
 }
 
 local function divisibleBy (n)
     return function (x)
-        local r = (x % n == 0)
-        debug("    Current worry level is %sdivisible by %i.\n", r and "" or "not ", n)
-        return r
+        return x % n == 0
     end
 end
 
 local function throwItem (monkeys, to)
     return function (item)
-        debug("    Item with worry level %i is thrown to monkey %i.\n", item, to - 1)
         monkeys[to].items:pushLast(item)
     end
 end
@@ -110,13 +94,12 @@ local function parseInput (useModulo)
         end
     end
     monkeys[monkeyId + 1] = makeMonkey(items, operation, test, onTrue, onFalse, n)
-    n = useModulo and product(ns) or huge
+    n = useModulo and product(ns) or maxinteger
     return monkeys, n
 end
 
 local function simulateRound (monkeys, n, useModulo)
     for monkeyId = 1, #monkeys do
-        debug("Monkey %i:\n", monkeyId - 1)
         local monkey = monkeys[monkeyId]
 
         local items = monkey.items
@@ -128,11 +111,9 @@ local function simulateRound (monkeys, n, useModulo)
         while not items:isEmpty() do
             monkey.activity = monkey.activity + 1
             local item = items:popFirst()
-            debug("  Monkey inspects an item with a worry level of %i.\n", item)
             item = operation(item, n)
             if not useModulo then
                 item = floor(item / 3)
-                debug("    Monkey gets bored with item. Worry level is divided by 3 to %i.\n", item)
             end
             if test(item) then
                 onTrue(item)
@@ -154,11 +135,7 @@ local function monkeyBusiness (monkeys)
 end
 
 local monkeys, n = parseInput(DONT_USE_MODULO)
-if DEBUG_LOGS then
-    show("monkeys", monkeys)
-    show("n = ", n)
-end
-for _ = 1, (DEBUG_LOGS and 1 or 20) do
+for _ = 1, 20 do
     simulateRound(monkeys, n, DONT_USE_MODULO)
 end
 
@@ -166,7 +143,7 @@ local answer1 = monkeyBusiness(monkeys)
 printf("Part 1: %i\n", answer1)
 
 monkeys, n = parseInput(USE_MODULO)
-for _ = 1, (DEBUG_LOGS and 1 or 10000) do
+for _ = 1, 10000 do
     simulateRound(monkeys, n, USE_MODULO)
 end
 

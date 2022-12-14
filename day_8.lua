@@ -12,7 +12,7 @@ local isValidCoord = Vec2.isValidCoord2d
 
 profile.start()
 
-local function forest ()
+local function parseForest ()
     local r = {}
     for y = 1, #input do
         local line = input[y]
@@ -60,7 +60,9 @@ local function countAllVisibleFromEdges (forest)
     return count
 end
 
-local answer1 = countAllVisibleFromEdges(forest())
+local forest = parseForest()
+
+local answer1 = countAllVisibleFromEdges(forest)
 printf("Part 1: %i\n", answer1)
 
 local function makeTree (height, treesBehind)
@@ -112,7 +114,7 @@ local function findMax (scores)
     return m
 end
 
-local answer2 = findMax(findScenicScores(forest()))
+local answer2 = findMax(findScenicScores(forest))
 printf("Part 2: %i\n", answer2)
 
 return answer1, answer2, profile.finish()

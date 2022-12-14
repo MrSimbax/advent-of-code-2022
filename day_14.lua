@@ -1,106 +1,101 @@
 local eio = require "libs.eio"
 local profile = require "libs.profile"
-local Vec2 = require "libs.Vec2"
 local estring = require "libs.estring"
+local emath = require "libs.emath"
+local Vec2 = require "libs.Vec2"
 
-local input = eio.lines()
 local printf = eio.printf
-local Vec = Vec2.makeVec
 local split = estring.split
-local norm = Vec2.norm
-local vmap = Vec2.map
-local vidiv = Vec2.idiv
+local match = string.match
+local tonumber = tonumber
+local sgn = emath.sgn
+local P = Vec2.makeVec
+local map = Vec2.map
 
 profile.start()
 
+local START = P(500, 0)
+
+local bottom = 0
+
 local function posFromStr (str)
-    return vmap(tonumber, split(str, ","))
+    local x, y = match(str, "(%d+),(%d+)")
+    return P(tonumber(x), tonumber(y))
 end
 
-local function gridSet (grid, pos)
-    grid[pos] = true
-    if pos[2] > grid.bottom then
-        grid.bottom = pos[2]
+local function addRock (set, pos)
+    set[pos] = true
+    if pos[2] > bottom then
+        bottom = pos[2]
     end
 end
 
-local function getGrid ()
-    local grid = {bottom = -1}
-    for i = 1, #input do
-        local line = input[i]
-        local positions = split(line)
-        local startPos = posFromStr(positions[1])
-        gridSet(grid, startPos)
-        for j = 3, #positions, 2 do
-            local endPos = posFromStr(positions[j])
-            gridSet(grid, endPos)
-            local dir = endPos - startPos
-            dir = vidiv(dir, norm(dir))
-            local pos = startPos + dir
-            while pos ~= endPos do
-                gridSet(grid, pos)
+local function parseRocks ()
+    local rocks = {}
+    for line in io.lines() do
+        local words = split(line)
+        local from = posFromStr(words[1])
+        addRock(rocks, from)
+        for j = 3, #words, 2 do
+            local to = posFromStr(words[j])
+            addRock(rocks, to)
+            local dir = map(sgn, to - from)
+            local pos = from + dir
+            while pos ~= to do
+                addRock(rocks, pos)
                 pos = pos + dir
             end
-            startPos = endPos
+            from = to
         end
     end
-    return grid
+    return rocks
 end
 
-local directions = {
-    Vec(0, 1),
-    Vec(-1, 1),
-    Vec(1, 1)
-}
+local function dropSand (rocks, isOccupied, shouldStop)
+    local sands = {}
+    local count = 0
+    local function dropFrom (pos)
+        if shouldStop(sands, rocks, pos) then
+            return false
+        end
+        if isOccupied(sands, rocks, pos) then
+            return true
+        end
 
-local function runSimulation (grid, isSpaceFree, shouldStop)
-    local sand = Vec(500, 0)
-    local restCount = 0
-    while true do
-        local nextSand
-        local rest = true
-        for i = 1, #directions do
-            nextSand = sand + directions[i]
-            if isSpaceFree(grid, nextSand) then
-                rest = false
-                break
-            end
+        local x, y = pos[1], pos[2]
+        local isBlocked = dropFrom(P(x, y + 1)) and dropFrom(P(x - 1, y + 1)) and dropFrom(P(x + 1, y + 1))
+        if isBlocked then
+            sands[pos] = true
+            count = count + 1
         end
-        if rest then
-            grid[sand] = "o"
-            restCount = restCount + 1
-            sand = Vec(500, 0)
-        else
-            sand = nextSand
-        end
-        if shouldStop(grid, sand) then
-            break
-        end
+        return isBlocked
     end
-    return restCount
+    dropFrom(START)
+    return sands, count
 end
 
-local function isBelowBottom (grid, pos)
-    return pos[2] > grid.bottom
+local function stopWhenHitBottomlessPit (_, _, pos)
+    return pos[2] > bottom
 end
 
-local function isNotOccupied (grid, pos)
-    return not grid[pos]
+local function isOccupied (rocks, sands, pos)
+    return sands[pos] or rocks[pos]
 end
 
-local answer1 = runSimulation(getGrid(), isNotOccupied, isBelowBottom)
+local rocks = parseRocks()
+
+local _, answer1 = dropSand(rocks, isOccupied, stopWhenHitBottomlessPit)
 printf("Part 1: %i\n", answer1)
 
-local function cantPour (grid, _)
-    return grid[Vec(500, 0)]
+local function stopWhenStartBlocked (_, _, _)
+    return false
 end
 
-local function isNotOccupiedAndNotFloor (grid, pos)
-    return not grid[pos] and pos[2] < (grid.bottom + 2)
+local function isOccupiedOrInfiniteFloor (rocks, sands, pos)
+    return isOccupied(rocks, sands, pos) or pos[2] == bottom + 2
 end
 
-local answer2 = runSimulation(getGrid(), isNotOccupiedAndNotFloor, cantPour)
+local _, answer2 = dropSand(rocks, isOccupiedOrInfiniteFloor, stopWhenStartBlocked)
 printf("Part 2: %i\n", answer2)
 
 return answer1, answer2, profile.finish()
-

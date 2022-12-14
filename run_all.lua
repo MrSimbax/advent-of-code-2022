@@ -55,6 +55,7 @@ local function checkAnswer (day, part, expected, actual)
     end
 end
 
+local times = {}
 local totalTimeTaken = 0
 for day = 1, maxDay do
     print(font.sub(string.format("${bold}################################### Day %2i #####################################${normal}", day)))
@@ -83,12 +84,32 @@ for day = 1, maxDay do
         checkAnswer(day, 1, answers[day][1], answer1)
         checkAnswer(day, 2, answers[day][2], answer2)
     end
-    totalTimeTaken = totalTimeTaken + tonumber(timeTaken)
+    timeTaken = tonumber(timeTaken)
+    totalTimeTaken = totalTimeTaken + timeTaken
+    times[day] = timeTaken
     print()
 end
 
+-- Sort times
+local dualTimes = {}
+local sortedTimes = {}
+for i = 1, #times do
+    sortedTimes[i] = times[i]
+    dualTimes[times[i]] = i
+end
+table.sort(sortedTimes, function (a, b) return a > b end)
+
+-- Print results
 print(font.sub("${bold}"..string.rep("#", 80).."${normal}"))
-print(string.format(font.sub("Total time taken: ${bold}%f s${normal}"), totalTimeTaken))
+
+print("Ranking")
+for i = 1, #sortedTimes do
+    print(string.format(font.sub("${bold}%2i.${normal} Day ${bold}%2i${normal} took ${bold}%f s${normal}."), i, dualTimes[sortedTimes[i]], sortedTimes[i]))
+end
+print(string.format(font.sub("Total time taken is ${bold}%.6f s${normal}."), totalTimeTaken))
+
+print()
+
 if #failures > 0 then
     print(string.format(font.sub("There were ${bold}${red}%i${normal} wrong answers."), #failures))
     for _, msg in ipairs(failures) do
