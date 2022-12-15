@@ -14,6 +14,7 @@ local addToSet = Set.add
 local huge = math.huge
 local sort = table.sort
 local min = math.min
+local floor = math.floor
 
 profile.start()
 
@@ -111,21 +112,59 @@ local rangeUnion, beaconSet = findCoveredRangeAtRow(sensors, beacons, 2000000, -
 local answer1 = countCoveredPositions(rangeUnion, beaconSet)
 printf("Part 1: %i\n", answer1)
 
-local MIN_COORD = 0
-local MAX_COORD = 4000000
+local function tuningFrequency (pos)
+    return pos[1] * 4000000 + pos[2]
+end
 
-local tuningFrequency = nil
-for y = MIN_COORD, MAX_COORD do
-    rangeUnion = findCoveredRangeAtRow(sensors, beacons, y, MIN_COORD, MAX_COORD)
-    if #rangeUnion > 1 then -- edge case not covered: x=0 or x=4000000
-        local range1 = rangeUnion[1]
-        local x = range1[2] + 1
-        tuningFrequency = x * MAX_COORD + y
-        break
+-- store each edge of the sensor as x-intercept of the line it lies on
+local posLines = {} -- lines y =  x + C
+local negLines = {} -- lines y = -x + C
+for i = 1, #sensors do
+    local sensorPos = sensors[i]
+    local beaconPos = beacons[i]
+    local range = cabdist(sensorPos, beaconPos)
+    posLines[#posLines + 1] = sensorPos[2] - range - sensorPos[1]
+    posLines[#posLines + 1] = sensorPos[2] + range - sensorPos[1]
+    negLines[#negLines + 1] = sensorPos[2] - range + sensorPos[1]
+    negLines[#negLines + 1] = sensorPos[2] + range + sensorPos[1]
+end
+
+-- find lines which are distance 1 apart, calculate the line in-between and store it
+local posCandidates = {}
+local negCandidates = {}
+for i = 1, #posLines do
+    for j = i + 1, #posLines do
+        if abs(posLines[i] - posLines[j]) == 2 then
+            posCandidates[#posCandidates + 1] = floor((posLines[i] + posLines[j]) / 2)
+        end
+        if abs(negLines[i] - negLines[j]) == 2 then
+            negCandidates[#negCandidates + 1] = floor((negLines[i] + negLines[j]) / 2)
+        end
     end
 end
 
-local answer2 = tuningFrequency
+-- find intersections
+local candidateSolutions = {}
+for i = 1, #posCandidates do
+    for j = i, #negCandidates do
+        candidateSolutions[#candidateSolutions + 1] = P(
+            floor((negCandidates[j] - posCandidates[i]) / 2),
+            floor((posCandidates[i] + negCandidates[j]) / 2))
+    end
+end
+
+-- find the solution
+local solution = nil
+for i = 1, #candidateSolutions do
+    for j = 1, #sensors do
+        if cabdist(sensors[j], candidateSolutions[i]) <= cabdist(sensors[j], beacons[j]) then
+            break
+        end
+    end
+    solution = candidateSolutions[i]
+end
+
+local answer2 = tuningFrequency(solution)
 printf("Part 2: %i\n", answer2)
 
 return answer1, answer2, profile.finish()
