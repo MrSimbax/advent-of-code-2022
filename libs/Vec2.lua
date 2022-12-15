@@ -11,7 +11,8 @@ local function makeCacheY (x)
             local vec = setmetatable({x, y}, mt)
             cacheY[y] = vec
             return vec
-        end
+        end,
+        __mode = "kv"
     }
 end
 
@@ -20,7 +21,8 @@ local cache = setmetatable({}, {
         local cacheY = setmetatable({}, makeCacheY(x))
         cache[x] = cacheY
         return cacheY
-    end
+    end,
+    __mode = "k"
 })
 
 local function makeVec (x, y)
