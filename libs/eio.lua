@@ -11,7 +11,7 @@ local Vec2 = require "libs.Vec2"
 local function basicShow (o)
     if type(o) == "function" then
         return format("%p", o)
-    elseif Vec2.isVec(o) then
+    elseif type(o) == "table" then
         return format("%s", tostring(o))
     else
         return format("%q", o)
