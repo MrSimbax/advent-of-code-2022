@@ -258,6 +258,10 @@ local function equals (x)
     return function (y) return x == y end
 end
 
+local function notEquals (x)
+    return function (y) return y ~= x end
+end
+
 local function dualSwap (seq, dualSeq, i, j)
     seq[i], seq[j] = seq[j], seq[i]
     dualSeq[seq[i]] = i
@@ -295,5 +299,6 @@ return {
     find = find,
     equals = equals,
     product = product,
-    dualSwap = dualSwap
+    dualSwap = dualSwap,
+    notEquals = notEquals
 }
