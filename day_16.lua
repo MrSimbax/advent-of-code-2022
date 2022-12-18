@@ -2,7 +2,6 @@ local eio = require "libs.eio"
 local profile = require "libs.profile"
 local pathfinding = require "libs.pathfinding"
 local sequence = require "libs.sequence"
-local Deque = require "libs.Deque"
 local bitset = require "libs.bitset"
 
 local printf = eio.printf
@@ -11,11 +10,10 @@ local tonumber = tonumber
 local sort = table.sort
 local gmatch = string.gmatch
 local findDistances = pathfinding.findShortestPath
-local bits = bitset.bits
-local union = bitset.union
-local resetBit = bitset.resetBit
+local intersect = bitset.intersection
+local setBit = bitset.setBit
 local dual = sequence.dual
-local makeBitset = bitset.make
+local testBit = bitset.testBit
 
 profile.start()
 
@@ -56,10 +54,7 @@ local function valve2node (graph, valves, valve)
         node = {name = valve.name, adj = {}}
         graph[valve.name] = node
         for _, tunnel in ipairs(valve.tunnels) do
-            node.adj[setmetatable({
-                label = 1,
-                to = valve2node(graph, valves, valves[tunnel])
-            }, {__tostring = function (adj) return adj.to.name end})] = true
+            node.adj[{label = 1, to = valve2node(graph, valves, valves[tunnel])}] = true
         end
     end
     return node
@@ -120,53 +115,20 @@ local dualNames = dual(names)
 
 local distances = findUsefulDistances(usefulValves, graph, dualNames)
 local rates = valves2rates(valves, dualNames)
-local allClosedValves = makeBitset(#names)
 
-local function makeNode (timeLeft, total, closedValves, position)
-    return {
-        timeLeft,
-        total,
-        closedValves,
-        position
-    }
-end
-
-local function node2str (node)
-    return table.concat(node, ",")
-end
-
-local function solve (totalTimeLeft, set2total)
-    local Q = Deque.new()
-    local visited = {}
-    Q:pushLast(makeNode(totalTimeLeft, 0, allClosedValves, 0))
-    local maxTotal = 0
-    while not Q:isEmpty() do
-        local node = Q:popLast()
-        local nodeIdx = node2str(node)
-
-        if not visited[nodeIdx] then
-            visited[nodeIdx] = true
-
-            local timeLeft, total, closedValves, position = node[1], node[2], node[3], node[4]
-
-            if total > maxTotal then
-                maxTotal = total
-            end
-
-            if set2total and (not set2total[closedValves] or set2total[closedValves] < total) then
-                set2total[closedValves] = total
-            end
-
-            if timeLeft > 1 then
-                for valveToOpen in bits(closedValves) do
-                    local newTimeLeft = timeLeft - distances[position][valveToOpen] - 1
-                    if newTimeLeft >= 0 then
-                        Q:pushLast(makeNode(
-                            newTimeLeft,
-                            total + newTimeLeft * rates[valveToOpen],
-                            resetBit(closedValves, valveToOpen),
-                            valveToOpen))
-                    end
+local function solve (timeLeft, total, openedValves, position, set2total)
+    if set2total and (set2total[openedValves] or 0) < total then
+        set2total[openedValves] = total
+    end
+    local maxTotal = total
+    for valveToOpen = 1, #rates do
+        if not testBit(openedValves, valveToOpen) then
+            local newTimeLeft = timeLeft - distances[position][valveToOpen] - 1
+            if newTimeLeft >= 0 then
+                local newTotal = total + newTimeLeft * rates[valveToOpen]
+                newTotal = solve(newTimeLeft, newTotal, setBit(openedValves, valveToOpen), valveToOpen, set2total)
+                if newTotal > maxTotal then
+                    maxTotal = newTotal
                 end
             end
         end
@@ -174,17 +136,15 @@ local function solve (totalTimeLeft, set2total)
     return maxTotal
 end
 
-local answer1 = solve(30)
+local answer1 = solve(30, 0, 0, 0)
 printf("Part 1: %i\n", answer1)
 
--- find the best value among all solutions in 26 minutes
--- a solution is valid only if two sets of opened valves are not intersecting
 local maxTotal = -1
 local set2total = {}
-solve(26, set2total)
+solve(26, 0, 0, 0, set2total)
 for set1, total1 in pairs(set2total) do
     for set2, total2 in pairs(set2total) do
-        if union(set1, set2) == allClosedValves then
+        if intersect(set1, set2) == 0 then
             local total = total1 + total2
             if total > maxTotal then
                 maxTotal = total
