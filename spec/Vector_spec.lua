@@ -125,6 +125,7 @@ describe("Vector", function ()
             assert.is.True(Vec{1, 2} < Vec{1, 3})
             assert.is.False(Vec{1, 3} < Vec{1, 2})
             assert.is.True(Vec{1, 2} < Vec{2, 1})
+            assert.is.False(Vec{2, 1} < Vec{1, 2})
         end)
 
         it("is false when vectors are equal", function ()

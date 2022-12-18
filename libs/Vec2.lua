@@ -103,10 +103,7 @@ function mt.__lt (u, v)
     if not isVec(u) or not isVec(v) then
         error("attempt to compare a vector with something else", 2)
     end
-    if u[1] >= v[1] or u[2] >= v[2] then
-        return false
-    end
-    return true
+    return u[1] < v[1] or (u[1] == v[1] and u[2] < v[2])
 end
 
 function mt.__le (u, v)

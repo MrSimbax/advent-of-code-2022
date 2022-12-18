@@ -145,6 +145,8 @@ function mt.__lt (u, v)
     for i = 1, #u do
         if u[i] < v[i] then
             return true
+        elseif u[i] > v[i] then
+            return false
         end
     end
     return false
