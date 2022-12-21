@@ -102,7 +102,7 @@ table.sort(sortedTimes, function (a, b) return a > b end)
 -- Print results
 print(font.sub("${bold}"..string.rep("#", 80).."${normal}"))
 
-print("Ranking")
+print("Ranking (from slowest to fastest)")
 for i = 1, #sortedTimes do
     print(string.format(font.sub("${bold}%2i.${normal} Day ${bold}%2i${normal} took ${bold}%f s${normal}."), i, dualTimes[sortedTimes[i]], sortedTimes[i]))
 end

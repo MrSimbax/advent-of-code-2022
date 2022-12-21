@@ -5,7 +5,6 @@ local lines = eio.lines
 local printf = eio.printf
 local tonumber = tonumber
 local match = string.match
-local floor = math.floor
 
 profile.start()
 
@@ -22,7 +21,7 @@ local function product (a, b)
 end
 
 local function quotient (a, b)
-    return floor(a / b)
+    return a / b
 end
 
 local opFromChar = {
