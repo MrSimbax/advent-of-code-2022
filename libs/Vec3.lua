@@ -135,6 +135,10 @@ local function dist (u, v)
     return norm(u - v)
 end
 
+local function cross (u, v)
+    return makeVec(u[2] * v[3] - u[3] * v[2], u[3] * v[1] - u[1] * v[3], u[1] * v[2] - u[2] * v[1])
+end
+
 local function map (f, v)
     return makeVec(f(v[1]), f(v[2]), f(v[3]))
 end
@@ -146,5 +150,6 @@ return {
     dist = dist,
     map = map,
     isVec = isVec,
-    idiv = idiv
+    idiv = idiv,
+    cross = cross
 }
