@@ -10,6 +10,10 @@ function Deque.isEmpty (q)
     return q.first > q.last
 end
 
+function Deque.sizeof (q)
+    return q.last - q.first + 1
+end
+
 function Deque.pushFirst (q, value)
     local first = q.first - 1
     q.first = first
