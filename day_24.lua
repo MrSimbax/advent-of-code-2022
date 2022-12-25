@@ -85,7 +85,6 @@ local function findShortestPath (minute, walls, blizzards, occupiedPositions, st
         local nextPositions = makeSet()
         blizzards, occupiedPositions = getNextBlizzards(walls, blizzards)
         for pos in pairs(positions) do
-
             if pos == finishPos then
                 return minute, blizzards, occupiedPositions
             end
